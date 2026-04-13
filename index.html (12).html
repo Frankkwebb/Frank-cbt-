@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAMB CBT Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F4F0;
+  --surface:#FFFFFF;
+  --card:#FAFAF8;
+  --border:#E2DFD8;
+  --border-strong:#C8C3BA;
+  --accent:#1B4FD8;
+  --accent-light:#EEF2FF;
+  --accent-mid:#3B6EF5;
+  --red:#D92D20;
+  --red-light:#FEF3F2;
+  --green:#027A48;
+  --green-light:#ECFDF3;
+  --amber:#B54708;
+  --amber-light:#FFFAEB;
+  --text:#1A1916;
+  --text-sec:#6B6760;
+  --text-muted:#9E9A94;
+  --mono:'Space Mono',monospace;
+  --sans:'Plus Jakarta Sans',sans-serif;
+  --r:12px;
+  --r-lg:16px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── LANDING ── */
+#screen-landing{background:var(--bg);align-items:center;justify-content:flex-start;padding:2rem 1rem 3rem;overflow-y:auto}
+.landing-inner{max-width:600px;width:100%;margin:0 auto}
+
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:3rem;padding-top:.5rem}
+.brand{display:flex;align-items:center;gap:.625rem}
+.brand-icon{width:36px;height:36px;background:var(--accent);border-radius:9px;display:grid;place-items:center;color:#fff;font-family:var(--mono);font-size:.8rem;font-weight:700}
+.brand-name{font-size:1rem;font-weight:800;letter-spacing:-.02em}
+.brand-name span{color:var(--accent)}
+.top-badge{background:var(--accent-light);color:var(--accent);font-size:.65rem;font-weight:700;font-family:var(--mono);padding:.3rem .6rem;border-radius:6px;letter-spacing:.04em}
+
+.hero{margin-bottom:2.5rem}
+.hero-tag{display:inline-flex;align-items:center;gap:.4rem;background:var(--green-light);color:var(--green);font-size:.7rem;font-weight:700;padding:.3rem .75rem;border-radius:20px;margin-bottom:1rem;font-family:var(--mono)}
+.hero-tag::before{content:'●';font-size:.5rem}
+h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.04em;line-height:1.08;color:var(--text);margin-bottom:.75rem}
+h1 em{font-style:normal;color:var(--accent)}
+.hero-sub{font-size:.9375rem;color:var(--text-sec);line-height:1.65}
+
+.config-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin-bottom:1rem}
+.config-card+.config-card{margin-top:0}
+.cfg-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:1rem;font-family:var(--mono)}
+
+/* subjects */
+.subject-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.subject-chip{border:1.5px solid var(--border);border-radius:var(--r);padding:.75rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.625rem;background:var(--card);transition:all .15s;position:relative}
+.subject-chip:hover{border-color:var(--accent);background:var(--accent-light)}
+.subject-chip.selected{border-color:var(--accent);background:var(--accent-light)}
+.chip-emoji{font-size:1.1rem;flex-shrink:0}
+.chip-label{font-size:.8125rem;font-weight:700;color:var(--text)}
+.chip-count{font-size:.6rem;color:var(--text-muted);font-family:var(--mono)}
+.chip-check{margin-left:auto;width:18px;height:18px;border:1.5px solid var(--border-strong);border-radius:5px;display:grid;place-items:center;flex-shrink:0;transition:all .15s;font-size:.65rem;color:transparent}
+.subject-chip.selected .chip-check{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* year chips */
+.year-actions{display:flex;gap:.375rem;margin-bottom:.625rem}
+.ya-btn{background:transparent;border:1px solid var(--border-strong);border-radius:6px;padding:.25rem .625rem;cursor:pointer;font-size:.65rem;font-weight:600;color:var(--text-sec);font-family:var(--mono);transition:all .15s}
+.ya-btn:hover{border-color:var(--accent);color:var(--accent)}
+.year-wrap{display:flex;flex-wrap:wrap;gap:.375rem}
+.year-chip{border:1px solid var(--border);border-radius:6px;padding:.25rem .5rem;cursor:pointer;font-size:.6rem;font-family:var(--mono);color:var(--text-sec);background:var(--card);transition:all .15s}
+.year-chip:hover{border-color:var(--accent);color:var(--accent)}
+.year-chip.selected{border-color:var(--accent);background:var(--accent-light);color:var(--accent);font-weight:700}
+
+/* q count */
+.qcount-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.qcount-row{display:flex;align-items:center;gap:.75rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.625rem .875rem}
+.qcount-label{font-size:.775rem;font-weight:600;color:var(--text);flex:1}
+.qcount-inp{width:52px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.8rem;text-align:center;padding:.25rem .375rem;outline:none}
+.qcount-inp:focus{border-color:var(--accent)}
+
+/* timer + mode */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.timer-row{display:flex;align-items:center;gap:.75rem}
+.timer-row label{font-size:.775rem;font-weight:600;flex:1}
+.timer-inp{width:64px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface);color:var(--text);font-family:var(--mono);font-size:.875rem;text-align:center;padding:.3rem .5rem;outline:none}
+.timer-inp:focus{border-color:var(--accent)}
+.timer-unit{font-size:.65rem;color:var(--text-muted);font-family:var(--mono)}
+.mode-btn{border:1.5px solid var(--border);border-radius:var(--r);padding:.75rem;cursor:pointer;background:var(--card);transition:all .15s;text-align:center}
+.mode-btn:hover{border-color:var(--accent)}
+.mode-btn.selected{border-color:var(--accent);background:var(--accent-light)}
+.mode-title{font-size:.775rem;font-weight:700;display:block;color:var(--text);margin-bottom:.2rem}
+.mode-desc{font-size:.6rem;color:var(--text-muted);font-family:var(--mono)}
+
+/* shuffle */
+.shuffle-row{display:flex;align-items:center;gap:1rem}
+.shuffle-row label:first-child{font-size:.775rem;font-weight:600;flex:1}
+.tog{position:relative;width:40px;height:22px;cursor:pointer;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-track{position:absolute;inset:0;background:var(--border-strong);border-radius:11px;transition:.25s}
+.tog-track::before{content:'';position:absolute;width:16px;height:16px;top:3px;left:3px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog input:checked+.tog-track{background:var(--accent)}
+.tog input:checked+.tog-track::before{transform:translateX(18px)}
+
+.start-btn{width:100%;padding:1rem;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:var(--sans);font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:-.01em;transition:all .2s;margin-top:1.25rem}
+.start-btn:hover{background:var(--accent-mid);transform:translateY(-1px);box-shadow:0 6px 24px rgba(27,79,216,.3)}
+.start-btn:disabled{background:var(--border-strong);color:var(--text-muted);cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ── EXAM ── */
+#screen-exam{background:var(--bg)}
+.exam-topbar{background:var(--surface);border-bottom:1px solid var(--border);height:56px;padding:0 1.25rem;display:flex;align-items:center;gap:1rem;flex-shrink:0;position:sticky;top:0;z-index:10}
+.tb-brand{font-size:.875rem;font-weight:800;letter-spacing:-.02em;margin-right:auto}
+.tb-brand span{color:var(--accent)}
+.tb-pill{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:.25rem .75rem;font-size:.6875rem;font-family:var(--mono);color:var(--text-sec)}
+.tb-pill b{color:var(--accent)}
+.sub-tag{background:var(--accent-light);color:var(--accent);font-size:.6rem;font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:.25rem .625rem;border-radius:5px}
+.timer-box{font-family:var(--mono);font-size:.875rem;font-weight:700;padding:.3rem .75rem;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);min-width:76px;text-align:center;transition:all .3s}
+.timer-box.warn{background:var(--amber-light);border-color:#F9A83A;color:var(--amber)}
+.timer-box.danger{background:var(--red-light);border-color:#FDA29B;color:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.finish-btn{background:var(--red-light);border:1px solid #FDA29B;color:var(--red);border-radius:8px;padding:.35rem .875rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .15s;flex-shrink:0}
+.finish-btn:hover{background:var(--red);color:#fff}
+
+.exam-body{flex:1;display:grid;grid-template-columns:220px 1fr;min-height:0;overflow:hidden}
+
+/* nav panel */
+.nav-panel{background:var(--surface);border-right:1px solid var(--border);padding:1.25rem;overflow-y:auto;display:flex;flex-direction:column;gap:.875rem}
+.nav-lbl{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);font-family:var(--mono);margin-bottom:.125rem}
+.nav-sub-title{font-size:.7rem;font-weight:700;color:var(--text-sec);margin-bottom:.375rem}
+.nav-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:.75rem}
+.nq{aspect-ratio:1;border-radius:5px;border:1px solid var(--border);background:var(--card);font-family:var(--mono);font-size:.55rem;font-weight:500;color:var(--text-muted);cursor:pointer;display:grid;place-items:center;transition:all .12s}
+.nq:hover{border-color:var(--accent);color:var(--accent)}
+.nq.answered{background:#EEF2FF;border-color:var(--accent);color:var(--accent)}
+.nq.current{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.nq.correct{background:var(--green-light);border-color:#6CE9A6;color:var(--green)}
+.nq.wrong{background:var(--red-light);border-color:#FDA29B;color:var(--red)}
+.nav-legend{display:flex;flex-direction:column;gap:.3rem;margin-top:auto;padding-top:.875rem;border-top:1px solid var(--border)}
+.leg-row{display:flex;align-items:center;gap:.5rem;font-size:.6rem;color:var(--text-sec)}
+.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* question area */
+.q-area{padding:1.75rem;overflow-y:auto;display:flex;flex-direction:column;gap:1.25rem}
+.q-meta{display:flex;align-items:center;gap:.625rem}
+.q-num{background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;font-family:var(--mono);padding:.3rem .75rem;border-radius:6px}
+.q-year{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:.2rem .5rem;font-size:.6rem;font-family:var(--mono);color:var(--text-muted)}
+.q-sub{margin-left:auto}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;border-top:3px solid var(--accent)}
+.q-text{font-size:1rem;line-height:1.7;font-weight:500;color:var(--text)}
+.opts{display:flex;flex-direction:column;gap:.5rem}
+.opt-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:.875rem 1.25rem;cursor:pointer;display:flex;align-items:flex-start;gap:.875rem;text-align:left;transition:all .14s;animation:optIn .25s ease both}
+.opt-btn:nth-child(1){animation-delay:.04s}
+.opt-btn:nth-child(2){animation-delay:.09s}
+.opt-btn:nth-child(3){animation-delay:.14s}
+.opt-btn:nth-child(4){animation-delay:.19s}
+@keyframes optIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.opt-btn:not(:disabled):hover{border-color:var(--accent);background:var(--accent-light)}
+.opt-btn.selected{border-color:var(--accent);background:var(--accent-light)}
+.opt-btn.correct,.opt-btn.reveal-correct{border-color:#6CE9A6;background:var(--green-light)}
+.opt-btn.wrong{border-color:#FDA29B;background:var(--red-light)}
+.opt-letter{width:28px;height:28px;border:1.5px solid var(--border-strong);border-radius:7px;display:grid;place-items:center;font-family:var(--mono);font-size:.65rem;font-weight:700;color:var(--text-sec);flex-shrink:0;transition:all .14s}
+.opt-btn.selected .opt-letter{background:var(--accent);border-color:var(--accent);color:#fff}
+.opt-btn.correct .opt-letter,.opt-btn.reveal-correct .opt-letter{background:var(--green);border-color:var(--green);color:#fff}
+.opt-btn.wrong .opt-letter{background:var(--red);border-color:var(--red);color:#fff}
+.opt-text{font-size:.9rem;line-height:1.6;color:var(--text);padding-top:2px}
+.exp-box{background:#FFFBF0;border:1px solid #F9A83A;border-left:3px solid var(--amber);border-radius:var(--r);padding:1.125rem 1.25rem;display:none}
+.exp-box.visible{display:block}
+.exp-title{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--amber);font-family:var(--mono);margin-bottom:.375rem}
+.exp-text{font-size:.875rem;line-height:1.65;color:#7A4800}
+.q-nav{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.nav-btn{padding:.6rem 1.125rem;border-radius:9px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--sans);font-size:.8rem;font-weight:700;color:var(--text);cursor:pointer;transition:all .14s}
+.nav-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.nav-btn:disabled{opacity:.35;cursor:not-allowed}
+.nav-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.nav-btn.primary:hover{background:var(--accent-mid)}
+.sp{flex:1}
+
+/* score strip */
+.score-strip{background:var(--surface);border-top:1px solid var(--border);padding:.625rem 1.5rem;display:flex;align-items:center;gap:1.25rem;flex-shrink:0}
+.sstat{display:flex;align-items:center;gap:.375rem;font-size:.7rem;font-family:var(--mono)}
+.sstat .sl{color:var(--text-muted)}
+.sstat .sv{font-weight:700}
+.sv.c{color:var(--green)}
+.sv.w{color:var(--red)}
+.sv.s{color:var(--text-sec)}
+.sbar-wrap{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.sbar{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
+
+/* ── RESULTS ── */
+#screen-results{background:var(--bg);align-items:center;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.res-wrap{max-width:560px;width:100%;background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.res-top{padding:2rem;background:linear-gradient(135deg,#1B4FD8 0%,#3B6EF5 100%);text-align:center;color:#fff}
+.res-ring-wrap{position:relative;display:inline-block;margin-bottom:1rem}
+.res-ring{transform:rotate(-90deg)}
+.res-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.res-pct{font-family:var(--mono);font-size:2rem;font-weight:700;color:#fff;line-height:1}
+.res-pct-lbl{font-size:.55rem;opacity:.7;letter-spacing:.08em;text-transform:uppercase;font-family:var(--mono)}
+.res-grade{font-size:1.25rem;font-weight:800;margin-bottom:.25rem}
+.res-grade .gl{font-size:1.75rem}
+.res-verdict{font-size:.875rem;opacity:.85}
+.res-body{padding:1.5rem}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.625rem;margin-bottom:1.5rem}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.875rem;text-align:center}
+.stat-n{font-family:var(--mono);font-size:1.5rem;font-weight:700;margin-bottom:.2rem}
+.stat-n.c{color:var(--green)}
+.stat-n.w{color:var(--red)}
+.stat-n.s{color:var(--text-sec)}
+.stat-l{font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-family:var(--mono)}
+.bk-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);font-family:var(--mono);margin-bottom:.75rem}
+.sub-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+.sub-row-lbl{font-size:.775rem;font-weight:600;width:86px;flex-shrink:0}
+.sub-row-bar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.sub-row-fill{height:100%;background:var(--accent);border-radius:3px;width:0;transition:width .8s ease}
+.sub-row-pct{font-family:var(--mono);font-size:.675rem;color:var(--text-sec);width:34px;text-align:right}
+.res-actions{display:flex;gap:.75rem;padding:1.25rem 1.5rem;border-top:1px solid var(--border)}
+.ra-btn{flex:1;padding:.75rem;border-radius:var(--r);border:1.5px solid var(--border);background:var(--card);font-family:var(--sans);font-size:.8125rem;font-weight:700;color:var(--text);cursor:pointer;transition:all .16s}
+.ra-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ra-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.ra-btn.primary:hover{background:var(--accent-mid)}
+
+@media(max-width:720px){
+  .exam-body{grid-template-columns:1fr}
+  .nav-panel{display:none}
+  .subject-grid,.qcount-grid,.two-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div class="screen active" id="screen-landing">
+<div class="landing-inner">
+
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">J</div>
+      <div class="brand-name">JAMB <span>CBT</span></div>
+    </div>
+    <div class="top-badge">2000 – 2024</div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-tag">Science Subjects</div>
+    <h1>Practice JAMB.<br><em>Score Higher.</em></h1>
+    <p class="hero-sub">Past questions across Biology, Maths, Physics &amp; Chemistry. Filter by year, set your timer, shuffle and go.</p>
+  </div>
+
+  <!-- Subjects -->
+  <div class="config-card">
+    <div class="cfg-title">Select Subjects</div>
+    <div class="subject-grid" id="subject-grid">
+      <div class="subject-chip selected" data-subject="biology"><span class="chip-emoji">🧬</span><div><div class="chip-label">Biology</div><div class="chip-count" id="cnt-biology">40 Qs</div></div><div class="chip-check">✓</div></div>
+      <div class="subject-chip selected" data-subject="maths"><span class="chip-emoji">📐</span><div><div class="chip-label">Mathematics</div><div class="chip-count" id="cnt-maths">40 Qs</div></div><div class="chip-check">✓</div></div>
+      <div class="subject-chip selected" data-subject="physics"><span class="chip-emoji">⚡</span><div><div class="chip-label">Physics</div><div class="chip-count" id="cnt-physics">40 Qs</div></div><div class="chip-check">✓</div></div>
+      <div class="subject-chip selected" data-subject="chemistry"><span class="chip-emoji">🧪</span><div><div class="chip-label">Chemistry</div><div class="chip-count" id="cnt-chemistry">40 Qs</div></div><div class="chip-check">✓</div></div>
+    </div>
+  </div>
+
+  <!-- Year Filter -->
+  <div class="config-card">
+    <div class="cfg-title">Filter by Year</div>
+    <div class="year-actions">
+      <button class="ya-btn" onclick="selectAllYears()">All</button>
+      <button class="ya-btn" onclick="clearYears()">Clear</button>
+    </div>
+    <div class="year-wrap" id="year-filter"></div>
+  </div>
+
+  <!-- Q Count -->
+  <div class="config-card">
+    <div class="cfg-title">Questions Per Subject</div>
+    <div class="qcount-grid">
+      <div class="qcount-row"><span class="qcount-label">Biology</span><input class="qcount-inp" type="number" id="qc-biology" value="10" min="1" max="40"></div>
+      <div class="qcount-row"><span class="qcount-label">Mathematics</span><input class="qcount-inp" type="number" id="qc-maths" value="10" min="1" max="40"></div>
+      <div class="qcount-row"><span class="qcount-label">Physics</span><input class="qcount-inp" type="number" id="qc-physics" value="10" min="1" max="40"></div>
+      <div class="qcount-row"><span class="qcount-label">Chemistry</span><input class="qcount-inp" type="number" id="qc-chemistry" value="10" min="1" max="40"></div>
+    </div>
+  </div>
+
+  <!-- Timer + Mode + Shuffle -->
+  <div class="config-card">
+    <div class="cfg-title">Exam Settings</div>
+    <div class="two-col" style="margin-bottom:.875rem">
+      <div class="timer-row">
+        <label>Timer</label>
+        <input class="timer-inp" type="number" id="timer-mins" value="60" min="5" max="240">
+        <span class="timer-unit">mins</span>
+      </div>
+      <div></div>
+    </div>
+    <div class="cfg-title" style="margin-bottom:.5rem">Mode</div>
+    <div class="two-col" style="margin-bottom:.875rem" id="mode-row">
+      <div class="mode-btn selected" data-mode="timed"><span class="mode-title">Timed Exam</span><span class="mode-desc">Real JAMB conditions</span></div>
+      <div class="mode-btn" data-mode="practice"><span class="mode-title">Practice</span><span class="mode-desc">Instant answer feedback</span></div>
+    </div>
+    <div class="shuffle-row">
+      <label>Shuffle Questions</label>
+      <label class="tog"><input type="checkbox" id="shuffle-toggle" checked><span class="tog-track"></span></label>
+    </div>
+  </div>
+
+  <button class="start-btn" id="start-btn" onclick="startExam()">Start Test →</button>
+
+</div>
+</div>
+
+<!-- EXAM -->
+<div class="screen" id="screen-exam">
+  <div class="exam-topbar">
+    <div class="tb-brand">JAMB <span>CBT</span></div>
+    <div class="tb-pill"><b id="q-current">1</b> / <b id="q-total">40</b></div>
+    <div class="sub-tag" id="current-subject-tag">Biology</div>
+    <div class="timer-box" id="timer-display">1:00:00</div>
+    <button class="finish-btn" id="finish-btn">Finish</button>
+  </div>
+  <div class="exam-body">
+    <div class="nav-panel">
+      <div class="nav-lbl">Navigator</div>
+      <div id="nav-groups"></div>
+      <div class="nav-legend">
+        <div class="leg-row"><div class="leg-dot" style="background:var(--accent)"></div>Current</div>
+        <div class="leg-row"><div class="leg-dot" style="background:#EEF2FF;border:1px solid var(--accent)"></div>Answered</div>
+        <div class="leg-row"><div class="leg-dot" style="background:var(--green-light);border:1px solid #6CE9A6"></div>Correct</div>
+        <div class="leg-row"><div class="leg-dot" style="background:var(--red-light);border:1px solid #FDA29B"></div>Wrong</div>
+      </div>
+    </div>
+    <div class="q-area">
+      <div class="q-meta">
+        <div class="q-num" id="q-badge">Q1</div>
+        <div class="q-year" id="q-year-tag">JAMB 2000</div>
+        <div class="q-sub sub-tag" id="current-subject-tag2">Biology</div>
+      </div>
+      <div class="q-card"><p class="q-text" id="question-text"></p></div>
+      <div class="opts" id="options-list"></div>
+      <div class="exp-box" id="explanation-box"><div class="exp-title">Explanation</div><div class="exp-text" id="explanation-text"></div></div>
+      <div class="q-nav">
+        <button class="nav-btn" id="btn-prev" onclick="prevQuestion()">← Prev</button>
+        <button class="nav-btn primary" id="btn-submit" onclick="submitAnswer()" style="display:none">Submit Answer</button>
+        <div class="sp"></div>
+        <button class="nav-btn" id="btn-next" onclick="nextQuestion()">Next →</button>
+      </div>
+    </div>
+  </div>
+  <div class="score-strip">
+    <div class="sstat"><span class="sl">Correct</span><span class="sv c" id="strip-correct">0</span></div>
+    <div class="sstat"><span class="sl">Wrong</span><span class="sv w" id="strip-wrong">0</span></div>
+    <div class="sstat"><span class="sl">Skipped</span><span class="sv s" id="strip-skip">0</span></div>
+    <div class="sbar-wrap"><div class="sbar" id="score-bar" style="width:0%"></div></div>
+    <div class="sstat"><span class="sv" id="strip-pct">0%</span></div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="screen-results">
+  <div class="res-wrap">
+    <div class="res-top">
+      <div class="res-ring-wrap">
+        <svg class="res-ring" width="130" height="130" viewBox="0 0 130 130">
+          <circle cx="65" cy="65" r="56" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="10"/>
+          <circle id="ring-fill" cx="65" cy="65" r="56" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="351.86" stroke-dashoffset="351.86" style="transition:stroke-dashoffset 1.2s ease"/>
+        </svg>
+        <div class="res-ring-center"><div class="res-pct" id="res-pct">0%</div><div class="res-pct-lbl">Score</div></div>
+      </div>
+      <div class="res-grade" id="res-grade">Grade: <span class="gl">-</span></div>
+      <div class="res-verdict" id="res-verdict"></div>
+    </div>
+    <div class="res-body">
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-n c" id="res-correct">0</div><div class="stat-l">Correct</div></div>
+        <div class="stat-box"><div class="stat-n w" id="res-wrong">0</div><div class="stat-l">Wrong</div></div>
+        <div class="stat-box"><div class="stat-n s" id="res-skip">0</div><div class="stat-l">Skipped</div></div>
+      </div>
+      <div class="bk-title">Subject Breakdown</div>
+      <div id="subject-breakdown"></div>
+    </div>
+    <div class="res-actions">
+      <button class="ra-btn" onclick="reviewAnswers()">Review Answers</button>
+      <button class="ra-btn primary" onclick="goHome()">New Test</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ QUESTION BANK ══
+const QB={
+biology:[
+  {q:"The organelle responsible for protein synthesis in a cell is the:",opts:["Mitochondrion","Ribosome","Lysosome","Golgi apparatus"],ans:1,year:2002,exp:"Ribosomes read mRNA and assemble amino acids into polypeptide chains."},
+  {q:"Which blood group is known as the universal donor?",opts:["AB","B","A","O"],ans:3,year:2004,exp:"Blood group O has no A or B antigens on red blood cells."},
+  {q:"The process by which plants make food using sunlight is:",opts:["Respiration","Digestion","Photosynthesis","Transpiration"],ans:2,year:2000,exp:"Photosynthesis converts CO₂ and H₂O into glucose using light energy in chloroplasts."},
+  {q:"Which part of a flower develops into the fruit?",opts:["Stigma","Ovary","Anther","Style"],ans:1,year:2001,exp:"After fertilization, the ovary wall develops into the fruit, while ovules become seeds."},
+  {q:"What is the powerhouse of the cell?",opts:["Nucleus","Ribosome","Mitochondrion","Vacuole"],ans:2,year:2003,exp:"Mitochondria produce ATP through cellular respiration."},
+  {q:"Haemophilia is an example of:",opts:["Autosomal dominant disorder","Sex-linked recessive disorder","Autosomal recessive disorder","Chromosomal disorder"],ans:1,year:2005,exp:"Haemophilia A is caused by a recessive allele on the X chromosome."},
+  {q:"The site of gaseous exchange in leaves is the:",opts:["Epidermis","Stomata","Mesophyll","Cuticle"],ans:1,year:2006,exp:"Stomata are pores through which CO₂ enters and O₂ exits during photosynthesis."},
+  {q:"Which is NOT a function of the liver?",opts:["Detoxification","Production of bile","Production of insulin","Storage of glycogen"],ans:2,year:2007,exp:"Insulin is produced by the pancreas, not the liver."},
+  {q:"Osmosis is the movement of water molecules from a region of:",opts:["Low concentration to high","High water potential to low water potential","High solute to low solute","Low water potential to high water potential"],ans:1,year:2008,exp:"Osmosis moves water down its water potential gradient through a semi-permeable membrane."},
+  {q:"The basic unit of classification in biology is the:",opts:["Family","Order","Species","Genus"],ans:2,year:2009,exp:"A species is the most fundamental unit — members can interbreed to produce fertile offspring."},
+  {q:"Which vitamin is essential for blood clotting?",opts:["Vitamin A","Vitamin C","Vitamin D","Vitamin K"],ans:3,year:2010,exp:"Vitamin K is required for synthesis of clotting factors in the liver."},
+  {q:"Peristalsis refers to:",opts:["Absorption of nutrients","Rhythmic muscular contractions moving food","Secretion of digestive enzymes","Breakdown of fats by bile"],ans:1,year:2011,exp:"Peristalsis is wave-like muscle contractions that propel food through the digestive tract."},
+  {q:"Maintaining a stable internal environment is called:",opts:["Homeostasis","Metabolism","Excretion","Regulation"],ans:0,year:2012,exp:"Homeostasis maintains stable internal conditions (temperature, pH, blood sugar)."},
+  {q:"Product of anaerobic respiration in yeast?",opts:["Carbon dioxide only","Lactic acid","Ethanol and carbon dioxide","Water and ATP"],ans:2,year:2013,exp:"Yeast fermentation: glucose → ethanol + CO₂."},
+  {q:"Sickle cell anaemia involves:",opts:["Deletion of a chromosome","Substitution of one amino acid in haemoglobin","Addition of an extra chromosome","Inversion of a DNA segment"],ans:1,year:2014,exp:"Glutamic acid at position 6 of β-globin is replaced by valine due to a point mutation."},
+  {q:"Hormone responsible for 'fight or flight' response:",opts:["Insulin","Thyroxine","Adrenaline","Glucagon"],ans:2,year:2015,exp:"Adrenaline (epinephrine), from the adrenal medulla, prepares the body for emergency response."},
+  {q:"The nitrogen cycle involves:",opts:["Photosynthesis and respiration","Nitrification, denitrification, and fixation","Evaporation and condensation","Oxidation and reduction only"],ans:1,year:2016,exp:"The nitrogen cycle includes fixation, nitrification, assimilation, ammonification, and denitrification."},
+  {q:"An example of a vestigial structure in humans:",opts:["Appendix","Liver","Kidney","Pancreas"],ans:0,year:2017,exp:"The appendix is a vestigial remnant of a larger cecum from evolutionary ancestors."},
+  {q:"'Biodiversity' refers to:",opts:["The variety of life forms in an ecosystem","The number of plants in a forest","Energy flow through a food web","Recycling of nutrients in soil"],ans:0,year:2018,exp:"Biodiversity encompasses genetic, species, and ecosystem diversity."},
+  {q:"Grass→Rabbit→Fox. The rabbit is:",opts:["A producer","A primary consumer","A secondary consumer","A decomposer"],ans:1,year:2019,exp:"The rabbit feeds on grass (the producer), making it a primary consumer."},
+  {q:"Disease caused by deficiency of Vitamin C:",opts:["Rickets","Scurvy","Pellagra","Beri-beri"],ans:1,year:2020,exp:"Scurvy results from Vitamin C deficiency, causing impaired collagen synthesis."},
+  {q:"Caterpillar transforming into a butterfly is called:",opts:["Regeneration","Metamorphosis","Germination","Sporulation"],ans:1,year:2021,exp:"Holometabolous metamorphosis: egg → larva → pupa → adult."},
+  {q:"Transpiration in plants occurs mainly through:",opts:["Roots","Stem bark","Stomata of leaves","Petals"],ans:2,year:2022,exp:"~97% of transpiration occurs through stomata driven by evaporation from mesophyll cells."},
+  {q:"Correct sequence of mitosis:",opts:["Prophase, Metaphase, Anaphase, Telophase","Metaphase, Prophase, Telophase, Anaphase","Anaphase, Prophase, Metaphase, Telophase","Telophase, Anaphase, Metaphase, Prophase"],ans:0,year:2023,exp:"PMAT: Prophase → Metaphase → Anaphase → Telophase."},
+  {q:"Study of heredity and variation is called:",opts:["Cytology","Ecology","Genetics","Taxonomy"],ans:2,year:2000,exp:"Genetics is the branch of biology concerned with genes, heredity, and variation."},
+  {q:"Part of the brain controlling balance and coordination:",opts:["Cerebrum","Medulla oblongata","Cerebellum","Hypothalamus"],ans:2,year:2001,exp:"The cerebellum coordinates voluntary movements, posture, and balance."},
+  {q:"DNA replication occurs during which phase?",opts:["G1 phase","S phase","G2 phase","M phase"],ans:1,year:2003,exp:"DNA synthesis occurs during the S (Synthesis) phase of interphase."},
+  {q:"Hormone that lowers blood sugar:",opts:["Glucagon","Thyroxine","Insulin","Cortisol"],ans:2,year:2005,exp:"Insulin, from pancreatic β-cells, lowers blood glucose by promoting cellular uptake."},
+  {q:"NOT a characteristic of living things:",opts:["Growth","Reproduction","Crystallization","Excretion"],ans:2,year:2007,exp:"Crystallization is a physical process, not a biological function."},
+  {q:"Malaria is caused by:",opts:["A bacterium","A virus","A protozoan","A fungus"],ans:2,year:2009,exp:"Malaria is caused by Plasmodium spp. (a protozoan) transmitted by Anopheles mosquitoes."},
+  {q:"Functional unit of the kidney:",opts:["Glomerulus","Nephron","Ureter","Collecting duct"],ans:1,year:2011,exp:"The nephron is the structural and functional unit of the kidney."},
+  {q:"Gas released during photosynthesis:",opts:["Carbon dioxide","Nitrogen","Oxygen","Water vapour"],ans:2,year:2013,exp:"Oxygen is released as a by-product when water is split in the light-dependent reactions."},
+  {q:"Father of Genetics:",opts:["Darwin","Hooke","Mendel","Watson"],ans:2,year:2015,exp:"Gregor Mendel's pea experiments established the laws of segregation and independent assortment."},
+  {q:"The immune system produces ______ to fight pathogens.",opts:["Hormones","Enzymes","Antibodies","Vitamins"],ans:2,year:2017,exp:"B lymphocytes produce antibodies that bind specifically to antigens on pathogens."},
+  {q:"Renewable source of energy:",opts:["Coal","Natural gas","Solar energy","Petroleum"],ans:2,year:2019,exp:"Solar energy is continuously replenished by the sun."},
+  {q:"Organ responsible for producing bile:",opts:["Pancreas","Gallbladder","Liver","Stomach"],ans:2,year:2021,exp:"Bile is synthesized in the liver and stored in the gallbladder."},
+  {q:"Meiosis produces cells with:",opts:["Same chromosomes as parent","Twice the number","Half the number","Four times the number"],ans:2,year:2022,exp:"Meiosis reduces chromosome number from diploid (2n) to haploid (n)."},
+  {q:"Cold-blooded (ectothermic) organism:",opts:["Dog","Bat","Lizard","Rabbit"],ans:2,year:2024,exp:"Lizards rely on external heat sources to regulate body temperature."},
+  {q:"Plant cell wall is mainly composed of:",opts:["Chitin","Cellulose","Starch","Protein"],ans:1,year:2006,exp:"Plant cell walls are made primarily of cellulose microfibrils."},
+  {q:"AIDS is caused by:",opts:["Hepatitis B virus","HIV","Plasmodium falciparum","Treponema pallidum"],ans:1,year:2010,exp:"AIDS is caused by HIV, which attacks CD4+ T-cells, weakening the immune system."}
+],
+maths:[
+  {q:"Simplify: (2³ × 2⁵) ÷ 2⁴",opts:["2²","2⁴","2⁸","16"],ans:1,year:2001,exp:"2³×2⁵=2⁸, then 2⁸÷2⁴=2⁴."},
+  {q:"If x+y=7 and x−y=3, find x²−y².",opts:["21","10","4","3"],ans:0,year:2003,exp:"x²−y²=(x+y)(x−y)=7×3=21."},
+  {q:"Bought for ₦500, sold for ₦650. Find percentage profit.",opts:["13%","23%","30%","15%"],ans:2,year:2005,exp:"Profit=150. %=(150/500)×100=30%."},
+  {q:"Mean of five numbers is 6. Four are 4,7,8,5. Find the fifth.",opts:["6","4","7","2"],ans:0,year:2007,exp:"Sum=30. 4+7+8+5=24. Fifth=30−24=6."},
+  {q:"Gradient of line joining (2,3) and (4,7).",opts:["2","3","4","½"],ans:0,year:2009,exp:"(7−3)/(4−2)=4/2=2."},
+  {q:"Solve: 3x−5=x+9",opts:["x=5","x=7","x=3","x=2"],ans:1,year:2011,exp:"2x=14, x=7."},
+  {q:"Circle radius 7cm. Area? [π=22/7]",opts:["44cm²","154cm²","22cm²","308cm²"],ans:1,year:2013,exp:"πr²=(22/7)×49=154cm²."},
+  {q:"Factorize: 6x²+7x−3",opts:["(2x+3)(3x−1)","(3x+1)(2x−3)","(6x−1)(x+3)","(2x−1)(3x+3)"],ans:0,year:2015,exp:"(2x+3)(3x−1)=6x²+7x−3 ✓"},
+  {q:"Interior angles sum to 1080°. How many sides?",opts:["6","7","8","9"],ans:2,year:2017,exp:"(n−2)×180=1080 → n=8."},
+  {q:"log2=0.3010, log3=0.4771. Find log12.",opts:["0.7781","1.0792","0.9031","1.1761"],ans:1,year:2019,exp:"log12=2log2+log3=0.6020+0.4771=1.0791."},
+  {q:"Convert 110011₂ to base 10.",opts:["51","49","53","47"],ans:0,year:2004,exp:"32+16+2+1=51."},
+  {q:"Bag: 4 red, 6 blue balls. P(red)?",opts:["2/5","3/5","1/4","1/2"],ans:0,year:2010,exp:"P=4/10=2/5."},
+  {q:"Range of: 7,3,14,9,11,5.",opts:["9","11","7","6"],ans:1,year:2016,exp:"14−3=11."},
+  {q:"Evaluate (0.064)^(1/3).",opts:["0.4","0.04","0.8","0.2"],ans:0,year:2014,exp:"∛(64/1000)=4/10=0.4."},
+  {q:"Tower 40m away, elevation 30°. Height? [tan30°=1/√3]",opts:["40/√3 m","40√3 m","20 m","80 m"],ans:0,year:2021,exp:"h=40×tan30°=40/√3 m."},
+  {q:"Solve: x²−5x+6=0",opts:["x=2 or x=3","x=1 or x=6","x=−2 or x=−3","x=2 or x=−3"],ans:0,year:2002,exp:"(x−2)(x−3)=0."},
+  {q:"Express 0.00045 in standard form.",opts:["4.5×10⁻⁴","4.5×10⁻³","4.5×10⁴","45×10⁻⁵"],ans:0,year:2006,exp:"4.5×10⁻⁴."},
+  {q:"LCM of 12, 18 and 24.",opts:["36","48","72","96"],ans:2,year:2008,exp:"LCM=2³×3²=72."},
+  {q:"Rectangle 12cm×5cm. Find diagonal.",opts:["13cm","17cm","7cm","60cm"],ans:0,year:2012,exp:"√(144+25)=√169=13cm."},
+  {q:"P={2,4,6,8}, Q={1,2,3,4}. Find P∩Q.",opts:["{2,4}","{1,2,3,4,6,8}","{6,8}","{1,3}"],ans:0,year:2020,exp:"Elements in both: {2,4}."},
+  {q:"Differentiate y=3x²+2x−5.",opts:["6x+2","3x+2","6x−5","3x²+2"],ans:0,year:2000,exp:"dy/dx=6x+2."},
+  {q:"Sum of first 10 terms of AP: 3,7,11,...",opts:["210","230","190","220"],ans:0,year:2023,exp:"Sₙ=n/2(2a+(n−1)d)=10/2(6+36)=210."},
+  {q:"Evaluate ⁵C₃.",opts:["10","15","20","6"],ans:0,year:2022,exp:"5!/(3!×2!)=10."},
+  {q:"sinθ=3/5. Find cosθ (θ acute).",opts:["4/5","3/4","5/3","5/4"],ans:0,year:2018,exp:"adj=√(25−9)=4. cosθ=4/5."},
+  {q:"Line slope 2 through (1,3):",opts:["y=2x+1","y=2x−3","y=2x+3","y=x+2"],ans:0,year:2016,exp:"y−3=2(x−1) → y=2x+1."},
+  {q:"Car travels 120km in 2hrs. Average speed?",opts:["60km/h","240km/h","40km/h","30km/h"],ans:0,year:2001,exp:"120/2=60km/h."},
+  {q:"Simplify (x²−4)/(x−2).",opts:["x+2","x−2","x²+2","2x"],ans:0,year:2003,exp:"(x+2)(x−2)/(x−2)=x+2."},
+  {q:"Find x: 2ˣ=32",opts:["4","5","6","3"],ans:1,year:2007,exp:"32=2⁵, x=5."},
+  {q:"Triangle base 10cm, height 6cm. Area?",opts:["60cm²","30cm²","16cm²","20cm²"],ans:1,year:2009,exp:"½×10×6=30cm²."},
+  {q:"40 students: 18 French, 22 Spanish, 8 both. How many neither?",opts:["8","10","12","14"],ans:0,year:2014,exp:"|F∪S|=18+22−8=32. Neither=40−32=8."},
+  {q:"Rationalize 1/(√3+1).",opts:["(√3−1)/2","(√3+1)/2","√3−1","√3+1"],ans:0,year:2011,exp:"Multiply by (√3−1)/(√3−1)=(√3−1)/2."},
+  {q:"3rd term of GP is 12, ratio=2. First term?",opts:["3","4","6","2"],ans:0,year:2017,exp:"ar²=12. a×4=12. a=3."},
+  {q:"Median of: 5,2,9,4,7,1,6",opts:["4","5","6","7"],ans:1,year:2019,exp:"Sorted: 1,2,4,5,6,7,9. Middle=5."},
+  {q:"Cylinder r=7cm, h=10cm. Volume? [π=22/7]",opts:["1540cm³","154cm³","770cm³","440cm³"],ans:0,year:2021,exp:"πr²h=(22/7)×49×10=1540cm³."},
+  {q:"Solve |2x−3|=7.",opts:["x=5 or x=−2","x=5 or x=2","x=−5 or x=2","x=4 or x=−2"],ans:0,year:2024,exp:"2x−3=7→x=5; 2x−3=−7→x=−2."},
+  {q:"y=x³−3x. Find dy/dx at x=2.",opts:["9","6","3","12"],ans:0,year:2023,exp:"dy/dx=3x²−3. At x=2: 12−3=9."},
+  {q:"HCF of 36 and 48.",opts:["6","12","18","24"],ans:1,year:2005,exp:"HCF=2²×3=12."},
+  {q:"log₂8+log₂4",opts:["5","6","7","4"],ans:0,year:2015,exp:"log₂8=3, log₂4=2. Sum=5."},
+  {q:"Cone r=6cm, h=8cm. Slant height?",opts:["10cm","14cm","7cm","100cm"],ans:0,year:2000,exp:"l=√(36+64)=√100=10cm."},
+  {q:"What is 15% of 400?",opts:["60","45","75","40"],ans:0,year:2002,exp:"15/100×400=60."}
+],
+physics:[
+  {q:"Which is a vector quantity?",opts:["Mass","Temperature","Velocity","Speed"],ans:2,year:2002,exp:"Velocity has magnitude and direction — it is a vector."},
+  {q:"Mass 5kg, acceleration 4m/s². Net force?",opts:["1.25N","9N","20N","0.8N"],ans:2,year:2004,exp:"F=ma=5×4=20N."},
+  {q:"SI unit of electric charge:",opts:["Ampere","Volt","Coulomb","Ohm"],ans:2,year:2006,exp:"The Coulomb (C) is the SI unit of electric charge."},
+  {q:"Wave: f=50Hz, λ=2m. Speed?",opts:["25m/s","52m/s","100m/s","48m/s"],ans:2,year:2008,exp:"v=fλ=50×2=100m/s."},
+  {q:"Mirror giving virtual, erect, diminished image always:",opts:["Plane","Concave","Convex","Both A and B"],ans:2,year:2010,exp:"A convex mirror always gives a virtual, erect, diminished image."},
+  {q:"Solid-to-gas phase change is called:",opts:["Evaporation","Condensation","Sublimation","Vaporisation"],ans:2,year:2012,exp:"Sublimation: solid→gas without passing through liquid."},
+  {q:"Series: 3Ω+5Ω+7Ω, 30V. Total current?",opts:["3A","2A","1A","5A"],ans:1,year:2014,exp:"R=15Ω. I=30/15=2A."},
+  {q:"Period of simple pendulum depends on:",opts:["Mass of bob","Amplitude","Length","Material of bob"],ans:2,year:2016,exp:"T=2π√(L/g). Period depends on length and g."},
+  {q:"Radiation with highest penetrating power:",opts:["Alpha","Beta","Gamma","X-ray"],ans:2,year:2018,exp:"Gamma rays need thick lead to absorb."},
+  {q:"Object 30cm from concave mirror f=10cm. Image distance?",opts:["15cm","20cm","10cm","5cm"],ans:0,year:2020,exp:"1/10−1/30=2/30. v=15cm."},
+  {q:"P∝T at constant volume:",opts:["Boyle's Law","Charles' Law","Gay-Lussac's Law","Dalton's Law"],ans:2,year:2007,exp:"Gay-Lussac's Law: P/T=constant at constant volume."},
+  {q:"Transformer: 500 primary, 100 secondary turns, 250V primary. Secondary V?",opts:["50V","1250V","125V","25V"],ans:0,year:2013,exp:"Vs=(100/500)×250=50V."},
+  {q:"1 Watt equals:",opts:["1J×s","1J/s","1N/m","1kg⋅m"],ans:1,year:2009,exp:"1W=1J/s."},
+  {q:"EM waves travel in vacuum at:",opts:["3×10⁸m/s","3×10⁶m/s","3×10¹⁰m/s","1.5×10⁸m/s"],ans:0,year:2022,exp:"Speed of light≈3×10⁸m/s."},
+  {q:"Mass 2kg raised 5m. PE? [g=10m/s²]",opts:["100J","25J","50J","10J"],ans:0,year:2001,exp:"PE=mgh=2×10×5=100J."},
+  {q:"Light bending between media is:",opts:["Reflection","Diffraction","Refraction","Dispersion"],ans:2,year:2003,exp:"Refraction: bending due to speed change between media."},
+  {q:"NOT an SI base unit:",opts:["Kilogram","Second","Newton","Kelvin"],ans:2,year:2005,exp:"Newton is derived (kg⋅m/s²)."},
+  {q:"Ohm's Law:",opts:["V=IR","P=IV","E=mc²","F=ma"],ans:0,year:2000,exp:"V=IR."},
+  {q:"Object in circular motion at constant speed has:",opts:["Zero acceleration","Constant velocity","Centripetal acceleration","No force"],ans:2,year:2011,exp:"Direction changes constantly, giving centripetal acceleration toward the centre."},
+  {q:"Unit of frequency:",opts:["Metre","Hertz","Newton","Pascal"],ans:1,year:2015,exp:"Frequency is in Hertz (Hz)=cycles per second."},
+  {q:"Convex lens f=20cm. Object at 30cm. Image distance?",opts:["60cm","30cm","15cm","90cm"],ans:0,year:2017,exp:"1/v=1/20−1/30=1/60. v=60cm."},
+  {q:"Radioactive decay emitting helium nucleus:",opts:["Beta decay","Gamma decay","Alpha decay","Neutron decay"],ans:2,year:2019,exp:"Alpha particle=helium-4 nucleus."},
+  {q:"Half-life 8 days. After 24 days, fraction remaining?",opts:["1/8","1/4","1/16","1/6"],ans:0,year:2021,exp:"3 half-lives. (1/2)³=1/8."},
+  {q:"Latent heat of vaporisation:",opts:["Raises temperature of liquid","Converts liquid to gas at constant temperature","Melts a solid","Raises temperature of gas"],ans:1,year:2023,exp:"Converts liquid to vapour at constant temperature."},
+  {q:"6Ω and 3Ω in parallel. Equivalent resistance?",opts:["9Ω","2Ω","18Ω","0.5Ω"],ans:1,year:2024,exp:"1/R=1/6+1/3=3/6. R=2Ω."},
+  {q:"Instrument measuring atmospheric pressure:",opts:["Thermometer","Barometer","Manometer","Hygrometer"],ans:1,year:2002,exp:"A barometer measures atmospheric pressure."},
+  {q:"Wave requiring a material medium:",opts:["Light","Gamma rays","Sound","Radio waves"],ans:2,year:2006,exp:"Sound is mechanical — it needs a medium. EM waves travel in vacuum."},
+  {q:"Bullet 0.01kg at 400m/s. KE?",opts:["800J","400J","80J","8J"],ans:0,year:2008,exp:"KE=½×0.01×160000=800J."},
+  {q:"Shortest wavelength in visible spectrum:",opts:["Red","Green","Yellow","Violet"],ans:3,year:2010,exp:"Violet has shortest wavelength (~380–450nm)."},
+  {q:"Newton's Third Law:",opts:["F=ma","Action and reaction are equal and opposite","Object at rest stays at rest","v=u+at"],ans:1,year:2012,exp:"Every action has an equal and opposite reaction."},
+  {q:"Ferromagnetic magnetisation by:",opts:["Induction","Electrolysis","Domain alignment","Oxidation"],ans:2,year:2014,exp:"Magnetic domains align in an external field."},
+  {q:"Echo after 4s, speed 340m/s. Distance of reflector?",opts:["680m","1360m","340m","170m"],ans:0,year:2016,exp:"d=(340×4)/2=680m."},
+  {q:"Force of attraction between two masses:",opts:["Coulomb's Law","Hooke's Law","Newton's Law of Gravitation","Archimedes' Principle"],ans:2,year:2018,exp:"F=Gm₁m₂/r²."},
+  {q:"A semiconductor:",opts:["Copper","Glass","Silicon","Iron"],ans:2,year:2020,exp:"Silicon's conductivity is between conductor and insulator."},
+  {q:"Body: rest to 20m/s in 4s. Acceleration?",opts:["5m/s²","80m/s²","4m/s²","0.2m/s²"],ans:0,year:2000,exp:"a=(20−0)/4=5m/s²."},
+  {q:"Boyle's Law: pressure and volume at:",opts:["Constant temperature","Constant pressure","Constant volume","Changing temperature"],ans:0,year:2004,exp:"PV=constant at constant temperature."},
+  {q:"Energy in a stretched spring:",opts:["Kinetic","Chemical","Elastic potential","Thermal"],ans:2,year:2009,exp:"PE=½kx²."},
+  {q:"Refractive index if v=2×10⁸m/s?",opts:["1.5","0.67","2.0","0.5"],ans:0,year:2013,exp:"n=c/v=3×10⁸/2×10⁸=1.5."},
+  {q:"Half-life of Carbon-14:",opts:["570 years","5730 years","14000 years","1000 years"],ans:1,year:2022,exp:"Carbon-14 half-life≈5730 years, used in radiocarbon dating."},
+  {q:"60W bulb for 5 hours. Energy in kWh?",opts:["0.3kWh","30kWh","300kWh","3kWh"],ans:0,year:2024,exp:"60W×5h=300Wh=0.3kWh."}
+],
+chemistry:[
+  {q:"Element with highest electronegativity:",opts:["Oxygen","Nitrogen","Fluorine","Chlorine"],ans:2,year:2001,exp:"Fluorine: electronegativity=3.98 (Pauling scale)."},
+  {q:"IUPAC name of CH₃−CH₂−OH:",opts:["Methanol","Propanol","Ethanol","Butanol"],ans:2,year:2006,exp:"Two carbons + hydroxyl group = Ethanol."},
+  {q:"Property of ionic compounds:",opts:["Low melting point","Conduct electricity when dissolved","Insoluble in water","Exist as gases at room temperature"],ans:1,year:2008,exp:"Ionic compounds dissociate into free-moving ions in solution."},
+  {q:"Ore purification by blowing hot air through molten metal:",opts:["Reduction","Calcination","Bessemerisation","Roasting"],ans:2,year:2010,exp:"The Bessemer process removes impurities from pig iron."},
+  {q:"Ethanol + ethanoic acid with H₂SO₄ produces:",opts:["Ester","Ether","Aldehyde","Ketone"],ans:0,year:2012,exp:"Esterification: alcohol + carboxylic acid → ester + water."},
+  {q:"Oxidation state of sulphur in H₂SO₄:",opts:["+4","+6","−2","+2"],ans:1,year:2014,exp:"2(+1)+S+4(−2)=0 → S=+6."},
+  {q:"Gas produced when zinc reacts with dilute HCl:",opts:["Oxygen","Hydrogen","Chlorine","Zinc chloride"],ans:1,year:2016,exp:"Zn+2HCl→ZnCl₂+H₂↑"},
+  {q:"Gas that turns limewater milky:",opts:["SO₂","CO₂","NO₂","H₂S"],ans:1,year:2005,exp:"CO₂+Ca(OH)₂→CaCO₃↓+H₂O."},
+  {q:"Cathode rays are streams of:",opts:["Protons","Neutrons","Electrons","Photons"],ans:2,year:2009,exp:"Cathode rays are streams of electrons."},
+  {q:"Moles in 36g of water [H₂O=18]:",opts:["0.5","1","2","18"],ans:2,year:2013,exp:"n=36/18=2 moles."},
+  {q:"Hess's Law relates to:",opts:["Rate of reaction","Equilibrium constant","Conservation of energy","Electrode potential"],ans:2,year:2017,exp:"Hess's Law: total enthalpy change is the same regardless of route."},
+  {q:"NOT a greenhouse gas:",opts:["CO₂","CH₄","N₂","H₂O vapour"],ans:2,year:2022,exp:"N₂ doesn't absorb IR radiation significantly."},
+  {q:"Concentration: 5.85g NaCl in 500cm³ [NaCl=58.5]:",opts:["0.1mol/L","0.2mol/L","1.0mol/L","2.0mol/L"],ans:1,year:2020,exp:"n=0.1mol, V=0.5L. C=0.2mol/L."},
+  {q:"Volume at STP: 2mol H₂O₂ decompose [2H₂O₂→2H₂O+O₂]:",opts:["22.4L","44.8L","11.2L","33.6L"],ans:0,year:2004,exp:"2mol H₂O₂→1mol O₂=22.4L at STP."},
+  {q:"Bond present in NaCl:",opts:["Covalent","Ionic","Metallic","Hydrogen"],ans:1,year:2002,exp:"NaCl forms by electrostatic attraction between Na⁺ and Cl⁻."},
+  {q:"pH of neutral solution at 25°C:",opts:["0","7","14","1"],ans:1,year:2000,exp:"Pure water: [H⁺]=[OH⁻]=10⁻⁷, pH=7."},
+  {q:"Liquid changing to vapour below boiling point:",opts:["Boiling","Evaporation","Condensation","Distillation"],ans:1,year:2003,exp:"Evaporation occurs at the surface below boiling point."},
+  {q:"V∝T at constant pressure:",opts:["Boyle's Law","Gay-Lussac's Law","Charles' Law","Dalton's Law"],ans:2,year:2007,exp:"Charles' Law: V/T=constant at constant pressure."},
+  {q:"Allotrope of carbon:",opts:["Calcite","Graphite","Quartz","Gypsum"],ans:1,year:2011,exp:"Graphite and diamond are allotropes of carbon."},
+  {q:"Atom/group replaced by another — type of reaction:",opts:["Addition","Substitution","Elimination","Polymerisation"],ans:1,year:2015,exp:"Substitution: one atom or group replaces another."},
+  {q:"Atomic number gives number of:",opts:["Neutrons","Protons","Electrons+Neutrons","Nucleons"],ans:1,year:2019,exp:"Atomic number = number of protons (= electrons in neutral atom)."},
+  {q:"Mixture separated by fractional distillation:",opts:["Salt and water","Sand and gravel","Ethanol and water","Iron and sulphur"],ans:2,year:2021,exp:"Ethanol (78°C) and water (100°C) have different boiling points."},
+  {q:"Formula of calcium carbonate:",opts:["CaO","Ca(OH)₂","CaCO₃","CaCl₂"],ans:2,year:2023,exp:"Ca²⁺+CO₃²⁻→CaCO₃."},
+  {q:"A+BC→AC+B is:",opts:["Decomposition","Double displacement","Single displacement","Synthesis"],ans:2,year:2024,exp:"A displaces B from compound BC."},
+  {q:"Reaction rate increases by:",opts:["Decreasing temperature","Increasing concentration","Decreasing surface area","Adding inhibitor"],ans:1,year:2018,exp:"Higher concentration → more collisions per second."},
+  {q:"Electrolysis uses:",opts:["Chemical energy to produce light","Electrical energy to drive chemical reactions","Heat to produce electricity","Mechanical energy to separate compounds"],ans:1,year:2016,exp:"Electrolysis uses electrical energy to decompose ionic compounds."},
+  {q:"Hydrogen collected over water by:",opts:["Downward displacement of water","Upward displacement of air","Downward displacement of air","Diffusion only"],ans:1,year:2001,exp:"Hydrogen is less dense than air — collected upward by downward displacement of air."},
+  {q:"Avogadro's number is approximately:",opts:["6.02×10²³","6.02×10²²","6.02×10²⁴","1.6×10⁻¹⁹"],ans:0,year:2005,exp:"6.02×10²³ mol⁻¹ — entities per mole."},
+  {q:"Product of burning magnesium in air:",opts:["Mg(OH)₂","MgCl₂","MgO","MgSO₄"],ans:2,year:2010,exp:"2Mg+O₂→2MgO."},
+  {q:"Functional group in alcohols:",opts:["−COOH","−CHO","−OH","−NH₂"],ans:2,year:2014,exp:"The hydroxyl group (−OH) characterises alcohols."},
+  {q:"CH₃CH₂OH and CH₃OCH₃ show which isomerism?",opts:["Chain","Position","Functional group","Optical"],ans:2,year:2000,exp:"Both C₂H₆O but different functional groups: functional group isomerism."},
+  {q:"Acid+base→salt+water is:",opts:["Oxidation","Hydrolysis","Neutralisation","Precipitation"],ans:2,year:2003,exp:"Neutralisation produces salt and water."},
+  {q:"A strong acid:",opts:["Ethanoic acid","Carbonic acid","Hydrochloric acid","Citric acid"],ans:2,year:2007,exp:"HCl fully dissociates in water — it is a strong acid."},
+  {q:"Rusting of iron requires:",opts:["Only water","Only oxygen","Both water and oxygen","Carbon dioxide"],ans:2,year:2011,exp:"Rust forms only when both water and oxygen are present."},
+  {q:"Lightest element in the periodic table:",opts:["Helium","Lithium","Hydrogen","Beryllium"],ans:2,year:2019,exp:"Hydrogen: atomic number 1, mass≈1."},
+  {q:"Redox reaction:",opts:["NaCl→Na⁺+Cl⁻","HCl+NaOH→NaCl+H₂O","Zn+CuSO₄→ZnSO₄+Cu","CO₂+H₂O→H₂CO₃"],ans:2,year:2022,exp:"Zn→Zn²⁺ (oxidation) and Cu²⁺→Cu (reduction)."},
+  {q:"Alcohols can be oxidised to form:",opts:["Alkanes","Aldehydes and ketones","Esters only","Alkenes"],ans:1,year:2024,exp:"Primary→aldehydes; secondary→ketones."},
+  {q:"Mass number = sum of:",opts:["Protons and electrons","Protons and neutrons","Electrons and neutrons","Neutrons only"],ans:1,year:2006,exp:"Mass number = protons + neutrons."},
+  {q:"Gas produced during fermentation of glucose:",opts:["Oxygen","Carbon dioxide","Nitrogen","Methane"],ans:1,year:2008,exp:"C₆H₁₂O₆→2C₂H₅OH+2CO₂."},
+  {q:"Element that does NOT react easily:",opts:["Sodium","Chlorine","Neon","Phosphorus"],ans:2,year:2012,exp:"Neon is a noble gas with full outer shell — extremely unreactive."}
+]};
+
+// ══ STATE ══
+const state={questions:[],answers:[],current:0,correct:0,wrong:0,timer:null,secondsLeft:3600,mode:'timed',subjects:[]};
+const YEARS=[...new Set(Object.values(QB).flat().map(q=>q.year))].sort();
+const LABELS={biology:'Biology',maths:'Mathematics',physics:'Physics',chemistry:'Chemistry'};
+
+function init(){
+  // Year chips
+  const yf=document.getElementById('year-filter');
+  YEARS.forEach(y=>{
+    const d=document.createElement('div');
+    d.className='year-chip selected';d.textContent=y;d.dataset.year=y;
+    d.onclick=()=>{d.classList.toggle('selected');updateQCounts()};
+    yf.appendChild(d);
+  });
+  // Subject chips
+  document.querySelectorAll('.subject-chip').forEach(c=>{
+    c.onclick=()=>{
+      c.classList.toggle('selected');
+      const chk=c.querySelector('.chip-check');
+      if(chk)chk.textContent=c.classList.contains('selected')?'✓':'';
+      updateQCounts();
+    };
+  });
+  // Mode buttons
+  document.querySelectorAll('.mode-btn').forEach(b=>{
+    b.onclick=()=>{document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('selected'));b.classList.add('selected')};
+  });
+  // Finish button — fixed
+  document.getElementById('finish-btn').onclick=function(){
+    if(confirm('Finish exam and see results?'))finishExam();
+  };
+  updateQCounts();
+}
+
+function selectAllYears(){document.querySelectorAll('.year-chip').forEach(c=>c.classList.add('selected'));updateQCounts()}
+function clearYears(){document.querySelectorAll('.year-chip').forEach(c=>c.classList.remove('selected'));updateQCounts()}
+function getSelectedYears(){return[...document.querySelectorAll('.year-chip.selected')].map(c=>+c.dataset.year)}
+
+function updateQCounts(){
+  const selYears=getSelectedYears();
+  ['biology','maths','physics','chemistry'].forEach(sub=>{
+    const bank=selYears.length===0?QB[sub]:QB[sub].filter(q=>selYears.includes(q.year));
+    const el=document.getElementById('cnt-'+sub);
+    if(el)el.textContent=bank.length+' Qs';
+    const inp=document.getElementById('qc-'+sub);
+    if(inp){inp.max=Math.max(1,bank.length);if(+inp.value>bank.length)inp.value=Math.max(1,bank.length)}
+  });
+}
+
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+
+function startExam(){
+  const selSubjects=[...document.querySelectorAll('.subject-chip.selected')].map(c=>c.dataset.subject);
+  if(!selSubjects.length){alert('Select at least one subject.');return}
+  const selYears=getSelectedYears();
+  const doShuffle=document.getElementById('shuffle-toggle').checked;
+  const modeEl=document.querySelector('.mode-btn.selected');
+  const mode=modeEl?modeEl.dataset.mode:'timed';
+  const timerMins=parseInt(document.getElementById('timer-mins').value)||60;
+
+  let questions=[];
+  selSubjects.forEach(sub=>{
+    let bank=QB[sub]||[];
+    if(selYears.length>0)bank=bank.filter(q=>selYears.includes(q.year));
+    const maxQ=parseInt(document.getElementById('qc-'+sub).value)||10;
+    let chosen=doShuffle?shuffle([...bank]).slice(0,maxQ):[...bank].slice(0,maxQ);
+    questions=questions.concat(chosen.map(q=>({...q,subject:sub})));
+  });
+
+  if(!questions.length){alert('No questions match your filters. Try selecting more years.');return}
+  if(doShuffle)shuffle(questions);
+
+  state.questions=questions;
+  state.answers=new Array(questions.length).fill(null);
+  state.current=0;state.correct=0;state.wrong=0;
+  state.mode=mode;state.subjects=selSubjects;
+  state.secondsLeft=timerMins*60;
+
+  document.getElementById('q-total').textContent=questions.length;
+  buildNavPanel();showScreen('screen-exam');renderQuestion();
+  if(mode!=='practice')startTimer();
+  else document.getElementById('timer-display').textContent='∞';
+}
+
+function buildNavPanel(){
+  const groups=document.getElementById('nav-groups');groups.innerHTML='';
+  state.subjects.forEach(sub=>{
+    const subQs=state.questions.filter(q=>q.subject===sub);
+    if(!subQs.length)return;
+    const g=document.createElement('div');
+    g.innerHTML=`<div class="nav-lbl" style="margin-bottom:.375rem">${LABELS[sub]||sub}</div><div class="nav-grid" id="nav-grid-${sub}"></div>`;
+    groups.appendChild(g);
+  });
+  updateNavGrid();
+}
+
+function updateNavGrid(){
+  document.querySelectorAll('.nav-grid').forEach(g=>g.innerHTML='');
+  state.questions.forEach((q,i)=>{
+    const grid=document.getElementById('nav-grid-'+q.subject);if(!grid)return;
+    const btn=document.createElement('button');btn.className='nq';btn.textContent=i+1;
+    const ans=state.answers[i];
+    if(i===state.current)btn.classList.add('current');
+    else if(state.mode==='practice'&&ans!==null)btn.classList.add(ans===q.ans?'correct':'wrong');
+    else if(ans!==null)btn.classList.add('answered');
+    btn.onclick=()=>{state.current=i;renderQuestion()};
+    grid.appendChild(btn);
+  });
+}
+
+function renderQuestion(){
+  const q=state.questions[state.current];
+  document.getElementById('q-current').textContent=state.current+1;
+  document.getElementById('q-badge').textContent='Q'+(state.current+1);
+  document.getElementById('q-year-tag').textContent='JAMB '+q.year;
+  document.getElementById('current-subject-tag').textContent=LABELS[q.subject]||q.subject;
+  document.getElementById('current-subject-tag2').textContent=LABELS[q.subject]||q.subject;
+  document.getElementById('question-text').textContent=q.q;
+
+  const optList=document.getElementById('options-list');optList.innerHTML='';
+  const letters=['A','B','C','D'];
+  const userAns=state.answers[state.current];
+  const revealed=state.mode==='practice'&&userAns!==null;
+
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');btn.className='opt-btn';
+    if(revealed)btn.disabled=true;
+    if(revealed){
+      if(i===q.ans)btn.classList.add('reveal-correct');
+      if(userAns===i&&i!==q.ans)btn.classList.add('wrong');
+      if(userAns===i&&i===q.ans)btn.classList.add('correct');
+    }else if(userAns===i)btn.classList.add('selected');
+    btn.innerHTML=`<div class="opt-letter">${letters[i]}</div><div class="opt-text">${opt}</div>`;
+    if(!revealed)btn.onclick=()=>selectOption(i);
+    optList.appendChild(btn);
+  });
+
+  const expBox=document.getElementById('explanation-box');
+  if(revealed){document.getElementById('explanation-text').textContent=q.exp;expBox.classList.add('visible')}
+  else expBox.classList.remove('visible');
+
+  const submitBtn=document.getElementById('btn-submit');
+  submitBtn.style.display=(!revealed&&state.mode!=='practice'&&userAns!==null)?'block':'none';
+
+  document.getElementById('btn-prev').disabled=state.current===0;
+  document.getElementById('btn-next').disabled=state.current===state.questions.length-1;
+  updateScoreStrip();updateNavGrid();
+}
+
+function selectOption(i){
+  const q=state.questions[state.current];
+  if(state.mode==='practice'){
+    state.answers[state.current]=i;
+    if(i===q.ans)state.correct++;else state.wrong++;
+    renderQuestion();
+  }else{state.answers[state.current]=i;renderQuestion();}
+}
+
+function submitAnswer(){
+  const q=state.questions[state.current];const ans=state.answers[state.current];
+  if(ans===null)return;
+  if(ans===q.ans)state.correct++;else state.wrong++;
+  renderQuestion();
+}
+
+function updateScoreStrip(){
+  const answered=state.answers.filter(a=>a!==null).length;
+  document.getElementById('strip-correct').textContent=state.correct;
+  document.getElementById('strip-wrong').textContent=state.wrong;
+  document.getElementById('strip-skip').textContent=state.questions.length-answered;
+  document.getElementById('strip-pct').textContent=answered===0?'0%':Math.round((state.correct/answered)*100)+'%';
+  document.getElementById('score-bar').style.width=(answered/state.questions.length*100)+'%';
+}
+
+function prevQuestion(){if(state.current>0){state.current--;renderQuestion()}}
+function nextQuestion(){if(state.current<state.questions.length-1){state.current++;renderQuestion()}}
+
+function startTimer(){
+  clearInterval(state.timer);
+  state.timer=setInterval(()=>{
+    state.secondsLeft--;updateTimerDisplay();
+    if(state.secondsLeft<=0){clearInterval(state.timer);finishExam()}
+  },1000);
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay(){
+  const el=document.getElementById('timer-display');
+  const h=Math.floor(state.secondsLeft/3600);
+  const m=Math.floor((state.secondsLeft%3600)/60);
+  const s=state.secondsLeft%60;
+  el.textContent=`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className='timer-box';
+  if(state.secondsLeft<300)el.classList.add('warn');
+  if(state.secondsLeft<60)el.classList.add('danger');
+}
+
+function finishExam(){
+  clearInterval(state.timer);
+  if(state.mode!=='practice'){
+    state.correct=0;state.wrong=0;
+    state.questions.forEach((q,i)=>{const a=state.answers[i];if(a===null)return;if(a===q.ans)state.correct++;else state.wrong++;});
+  }
+  const total=state.questions.length;
+  const skip=state.answers.filter(a=>a===null).length;
+  const pct=Math.round((state.correct/total)*100);
+
+  setTimeout(()=>{
+    const c=351.86;
+    document.getElementById('ring-fill').style.strokeDashoffset=c-(pct/100*c);
+  },300);
+
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-correct').textContent=state.correct;
+  document.getElementById('res-wrong').textContent=state.wrong;
+  document.getElementById('res-skip').textContent=skip;
+
+  let grade,verdict,gc;
+  if(pct>=75){grade='A';verdict='Excellent! JAMB-ready.';gc='#027A48'}
+  else if(pct>=60){grade='B';verdict='Good performance. Keep it up!';gc='#065986'}
+  else if(pct>=50){grade='C';verdict='Average. Target your weak spots.';gc='#B54708'}
+  else if(pct>=40){grade='D';verdict='Below average. More practice needed.';gc='#C4320A'}
+  else{grade='F';verdict='Keep studying — consistency wins!';gc='#D92D20'}
+
+  document.getElementById('res-grade').innerHTML=`Grade: <span class="gl" style="color:${gc}">${grade}</span>`;
+  document.getElementById('res-verdict').textContent=verdict;
+
+  const breakdown=document.getElementById('subject-breakdown');breakdown.innerHTML='';
+  state.subjects.forEach(sub=>{
+    const subQs=state.questions.map((q,i)=>({q,i})).filter(({q})=>q.subject===sub);
+    const subCorrect=subQs.filter(({q,i})=>state.answers[i]===q.ans).length;
+    const subTotal=subQs.length;
+    const subPct=subTotal?Math.round(subCorrect/subTotal*100):0;
+    const row=document.createElement('div');row.className='sub-row';
+    row.innerHTML=`<div class="sub-row-lbl">${LABELS[sub]}</div><div class="sub-row-bar"><div class="sub-row-fill"></div></div><div class="sub-row-pct">${subPct}%</div>`;
+    breakdown.appendChild(row);
+    setTimeout(()=>{row.querySelector('.sub-row-fill').style.width=subPct+'%'},400);
+  });
+
+  showScreen('screen-results');
+}
+
+function reviewAnswers(){
+  state.current=0;
+  state.mode='practice';
+  showScreen('screen-exam');
+  renderQuestion();
+}
+
+function goHome(){
+  clearInterval(state.timer);
+  showScreen('screen-landing');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+init();
+</script>
+</body>
+</html>
