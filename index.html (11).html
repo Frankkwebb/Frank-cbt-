@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frank CBT — JAMB Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Epilogue:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f0e;
+  --surface: #111614;
+  --card: #161c19;
+  --border: #1f2b24;
+  --green: #00e676;
+  --green-dim: #00c853;
+  --green-dark: #003d1a;
+  --green-muted: rgba(0,230,118,0.08);
+  --green-glow: rgba(0,230,118,0.15);
+  --red: #ff5252;
+  --red-muted: rgba(255,82,82,0.1);
+  --amber: #ffab40;
+  --amber-muted: rgba(255,171,64,0.1);
+  --text: #e8f0eb;
+  --text-sec: #7a9485;
+  --text-dim: #3d5447;
+  --white: #ffffff;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Epilogue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; position: relative; z-index: 1; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ══════════════════════════════════════
+   LANDING SCREEN
+══════════════════════════════════════ */
+#screen-landing {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+#screen-landing::before {
+  content: '';
+  position: absolute;
+  top: -200px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,230,118,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.landing-inner {
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+}
+
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.logo-icon {
+  width: 48px; height: 48px;
+  border: 1.5px solid var(--green);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--green);
+  position: relative;
+}
+
+.logo-icon::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,230,118,0.2);
+}
+
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.logo-text span { color: var(--green); }
+
+.landing-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.landing-eyebrow::before,
+.landing-eyebrow::after {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--green);
+  opacity: 0.4;
+}
+
+h1.landing-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+
+h1.landing-title .accent { color: var(--green); }
+
+.landing-sub {
+  font-size: 0.9375rem;
+  color: var(--text-sec);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+/* SUBJECT SELECT */
+.subject-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.subject-chip {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.subject-chip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--green-muted);
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+
+.subject-chip:hover::before,
+.subject-chip.selected::before { opacity: 1; }
+
+.subject-chip.selected {
+  border-color: var(--green);
+}
+
+.subject-chip.selected .chip-icon { color: var(--green); }
+
+.chip-icon {
+  font-size: 1.25rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.chip-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+  position: relative;
+}
+
+.chip-count {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  color: var(--text-dim);
+  position: relative;
+}
+
+.chip-check {
+  margin-left: auto;
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.18s;
+}
+
+.subject-chip.selected .chip-check {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.chip-check::after {
+  content: '✓';
+  font-size: 0.5625rem;
+  color: var(--bg);
+  opacity: 0;
+  font-weight: 700;
+}
+
+.subject-chip.selected .chip-check::after { opacity: 1; }
+
+/* MODE SELECT */
+.mode-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.625rem;
+  margin-bottom: 2rem;
+}
+
+.mode-btn {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.875rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+}
+
+.mode-btn.selected {
+  border-color: var(--green);
+  background: var(--green-muted);
+}
+
+.mode-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.mode-desc {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  color: var(--text-dim);
+}
+
+.start-btn {
+  width: 100%;
+  padding: 1rem;
+  background: var(--green);
+  color: var(--bg);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.start-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+}
+
+.start-btn:hover {
+  background: #00f082;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(0,230,118,0.25);
+}
+
+.start-btn:disabled {
+  background: var(--border);
+  color: var(--text-dim);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ══════════════════════════════════════
+   EXAM SCREEN
+══════════════════════════════════════ */
+#screen-exam {
+  flex-direction: column;
+}
+
+.exam-topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.topbar-logo span { color: var(--green); }
+
+.topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.progress-pill {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  color: var(--text-sec);
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+}
+
+.progress-pill span { color: var(--green); font-weight: 500; }
+
+.subject-tag {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.625rem;
+  border-radius: 4px;
+  background: var(--green-muted);
+  color: var(--green);
+  border: 1px solid rgba(0,230,118,0.2);
+}
+
+.timer-display {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  min-width: 72px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.timer-display.warning {
+  color: var(--amber);
+  border-color: rgba(255,171,64,0.3);
+  background: var(--amber-muted);
+}
+
+.timer-display.danger {
+  color: var(--red);
+  border-color: rgba(255,82,82,0.3);
+  background: var(--red-muted);
+  animation: timerPulse 1s ease infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* EXAM LAYOUT */
+.exam-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 0;
+}
+
+/* QUESTION NAV PANEL */
+.nav-panel {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.nav-section-label {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+
+.nav-subject-group {
+  margin-bottom: 0.75rem;
+}
+
+.nav-subject-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--text-sec);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+
+.nav-q-btn {
+  aspect-ratio: 1;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: grid;
+  place-items: center;
+}
+
+.nav-q-btn:hover { border-color: var(--green); color: var(--text); }
+.nav-q-btn.answered { background: var(--green-dark); border-color: rgba(0,230,118,0.3); color: var(--green); }
+.nav-q-btn.current { background: var(--green); color: var(--bg); border-color: var(--green); font-weight: 700; }
+.nav-q-btn.correct { background: rgba(0,230,118,0.2); border-color: var(--green); color: var(--green); }
+.nav-q-btn.wrong { background: var(--red-muted); border-color: rgba(255,82,82,0.4); color: var(--red); }
+
+.nav-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.625rem;
+  color: var(--text-sec);
+}
+
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* QUESTION AREA */
+.question-area {
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.q-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.q-number-badge {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.375rem 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--text-sec);
+  flex-shrink: 0;
+}
+
+.q-year-tag {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  color: var(--text-dim);
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.question-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.question-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--green), transparent);
+}
+
+.question-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text);
+  font-weight: 400;
+}
+
+/* OPTIONS */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-bottom: 1.75rem;
+}
+
+.option-btn {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  text-align: left;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeOpt 0.3s ease both;
+}
+
+.option-btn:nth-child(1) { animation-delay: 0.05s; }
+.option-btn:nth-child(2) { animation-delay: 0.1s; }
+.option-btn:nth-child(3) { animation-delay: 0.15s; }
+.option-btn:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes fadeOpt {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.option-btn:not(:disabled):hover {
+  border-color: var(--green);
+  background: var(--green-muted);
+}
+
+.option-btn.selected {
+  border-color: var(--green);
+  background: var(--green-muted);
+}
+
+.option-btn.correct {
+  border-color: var(--green);
+  background: rgba(0,230,118,0.12);
+}
+
+.option-btn.wrong {
+  border-color: var(--red);
+  background: var(--red-muted);
+}
+
+.option-btn.reveal-correct {
+  border-color: var(--green);
+  background: rgba(0,230,118,0.06);
+}
+
+.option-letter {
+  width: 28px; height: 28px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-sec);
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.option-btn.selected .option-letter,
+.option-btn.correct .option-letter {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--bg);
+}
+
+.option-btn.wrong .option-letter {
+  background: var(--red);
+  border-color: var(--red);
+  color: white;
+}
+
+.option-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+  padding-top: 2px;
+}
+
+/* EXPLANATION BOX */
+.explanation-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--green);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--text-sec);
+  display: none;
+  animation: slideIn 0.2s ease;
+}
+
+.explanation-box.visible { display: block; }
+
+.explanation-box strong {
+  display: block;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--green);
+  margin-bottom: 0.375rem;
+}
+
+/* NAV CONTROLS */
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.ctrl-btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  font-family: 'Epilogue', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ctrl-btn:hover:not(:disabled) {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.ctrl-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.ctrl-btn.primary {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--bg);
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+}
+
+.ctrl-btn.primary:hover {
+  background: #00f082;
+  border-color: #00f082;
+  color: var(--bg);
+}
+
+.ctrl-btn.danger {
+  border-color: rgba(255,82,82,0.3);
+  color: var(--red);
+  background: var(--red-muted);
+}
+
+.spacer { flex: 1; }
+
+/* SCORE BAR */
+.score-strip {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 0.625rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+.score-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+}
+
+.score-stat .label { color: var(--text-dim); }
+.score-stat .val { font-weight: 500; }
+.score-stat .val.correct { color: var(--green); }
+.score-stat .val.wrong { color: var(--red); }
+.score-stat .val.skip { color: var(--text-sec); }
+
+.score-bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.score-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-dim), var(--green));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ══════════════════════════════════════
+   RESULTS SCREEN
+══════════════════════════════════════ */
+#screen-results {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+#screen-results::before {
+  content: '';
+  position: absolute;
+  top: -100px; left: 50%; transform: translateX(-50%);
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(0,230,118,0.05) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.results-card {
+  max-width: 620px;
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.results-header {
+  background: var(--surface);
+  padding: 2rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.results-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--green), transparent);
+}
+
+.score-ring-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+.score-ring {
+  transform: rotate(-90deg);
+  filter: drop-shadow(0 0 12px rgba(0,230,118,0.3));
+}
+
+.score-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-pct {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--white);
+  line-height: 1;
+}
+
+.score-pct-label {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.results-grade {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.results-grade .grade-letter {
+  color: var(--green);
+  font-size: 2rem;
+}
+
+.results-verdict {
+  font-size: 0.875rem;
+  color: var(--text-sec);
+}
+
+.results-body {
+  padding: 1.5rem 2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.stat-box-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.25rem;
+}
+
+.stat-box-val.c { color: var(--green); }
+.stat-box-val.w { color: var(--red); }
+.stat-box-val.s { color: var(--text-sec); }
+
+.stat-box-label {
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.subject-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.subject-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.subject-row-label {
+  font-size: 0.75rem;
+  color: var(--text-sec);
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.subject-row-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.subject-row-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--green-dim), var(--green));
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.subject-row-pct {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  color: var(--text-sec);
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.results-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.results-actions .ctrl-btn { flex: 1; padding: 0.875rem; }
+
+/* ══════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .exam-body { grid-template-columns: 1fr; }
+  .nav-panel { display: none; }
+  .subject-grid { grid-template-columns: 1fr; }
+  .mode-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LANDING ══ -->
+<div class="screen active" id="screen-landing">
+  <div class="landing-inner">
+    <div class="logo-mark">
+      <div class="logo-icon">F</div>
+      <div class="logo-text">Frank <span>CBT</span></div>
+    </div>
+
+    <div class="landing-eyebrow">JAMB Practice Platform</div>
+
+    <h1 class="landing-title">
+      Prep Smarter.<br><span class="accent">Score Higher.</span>
+    </h1>
+
+    <p class="landing-sub">
+      Practice with JAMB-style questions across all major subjects.<br>
+      Track your performance. Build exam confidence.
+    </p>
+
+    <div style="margin-bottom:1rem;">
+      <div class="nav-section-label" style="margin-bottom:0.625rem;text-align:left;">Select Subjects (max 4)</div>
+      <div class="subject-grid" id="subject-grid">
+        <div class="subject-chip selected" data-subject="english">
+          <span class="chip-icon">📝</span>
+          <div><div class="chip-label">English Language</div><div class="chip-count">40 Questions</div></div>
+          <div class="chip-check"></div>
+        </div>
+        <div class="subject-chip selected" data-subject="maths">
+          <span class="chip-icon">📐</span>
+          <div><div class="chip-label">Mathematics</div><div class="chip-count">40 Questions</div></div>
+          <div class="chip-check"></div>
+        </div>
+        <div class="subject-chip" data-subject="physics">
+          <span class="chip-icon">⚡</span>
+          <div><div class="chip-label">Physics</div><div class="chip-count">40 Questions</div></div>
+          <div class="chip-check"></div>
+        </div>
+        <div class="subject-chip" data-subject="chemistry">
+          <span class="chip-icon">🧪</span>
+          <div><div class="chip-label">Chemistry</div><div class="chip-count">40 Questions</div></div>
+          <div class="chip-check"></div>
+        </div>
+        <div class="subject-chip" data-subject="biology">
+          <span class="chip-icon">🧬</span>
+          <div><div class="chip-label">Biology</div><div class="chip-count">40 Questions</div></div>
+          <div class="chip-check"></div>
+        </div>
+        <div class="subject-chip" data-subject="economics">
+          <span class="chip-icon">📈</span>
+          <div><div class="chip-label">Economics</div><div class="chip-count">40 Questions</div></div>
+          <div class="chip-check"></div>
+        </div>
+        <div class="subject-chip" data-subject="government">
+          <span class="chip-icon">🏛️</span>
+          <div><div class="chip-label">Government</div><div class="chip-count">40 Questions</div></div>
+          <div class="chip-check"></div>
+        </div>
+        <div class="subject-chip" data-subject="literature">
+          <span class="chip-icon">📚</span>
+          <div><div class="chip-label">Literature</div><div class="chip-count">40 Questions</div></div>
+          <div class="chip-check"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+      <div class="nav-section-label" style="margin-bottom:0.625rem;text-align:left;">Exam Mode</div>
+      <div class="mode-row" id="mode-row">
+        <div class="mode-btn selected" data-mode="practice">
+          <span class="mode-label">Practice</span>
+          <span class="mode-desc">See answers</span>
+        </div>
+        <div class="mode-btn" data-mode="timed">
+          <span class="mode-label">Timed</span>
+          <span class="mode-desc">90 mins</span>
+        </div>
+        <div class="mode-btn" data-mode="mock">
+          <span class="mode-label">Mock Exam</span>
+          <span class="mode-desc">Full JAMB</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="start-btn" id="start-btn" onclick="startExam()">Start Practice →</button>
+  </div>
+</div>
+
+<!-- ══ EXAM ══ -->
+<div class="screen" id="screen-exam">
+  <div class="exam-topbar">
+    <div class="topbar-logo">Frank <span>CBT</span></div>
+    <div class="topbar-center">
+      <div class="progress-pill">Q <span id="q-current">1</span> / <span id="q-total">100</span></div>
+      <div class="subject-tag" id="current-subject-tag">English</div>
+    </div>
+    <div class="timer-display" id="timer-display">1:30:00</div>
+  </div>
+
+  <div class="exam-body">
+    <!-- NAV PANEL -->
+    <div class="nav-panel">
+      <div>
+        <div class="nav-section-label">Question Navigator</div>
+        <div id="nav-groups"></div>
+      </div>
+      <div class="nav-legend">
+        <div class="legend-row"><div class="legend-dot" style="background:var(--green)"></div>Current</div>
+        <div class="legend-row"><div class="legend-dot" style="background:var(--green-dark)"></div>Answered</div>
+        <div class="legend-row"><div class="legend-dot" style="background:var(--card); border:1px solid var(--border)"></div>Unanswered</div>
+      </div>
+    </div>
+
+    <!-- QUESTION AREA -->
+    <div class="question-area">
+      <div class="q-header">
+        <div class="q-number-badge" id="q-badge">Question 1</div>
+        <div class="q-year-tag" id="q-year-tag">Year —</div>
+      </div>
+
+      <div class="question-card">
+        <div class="question-text" id="question-text">Loading question...</div>
+      </div>
+
+      <div class="options-list" id="options-list"></div>
+
+      <div class="explanation-box" id="explanation-box">
+        <strong>Explanation</strong>
+        <span id="explanation-text"></span>
+      </div>
+
+      <div class="nav-controls">
+        <button class="ctrl-btn" id="btn-prev" onclick="prevQuestion()">← Prev</button>
+        <button class="ctrl-btn primary" id="btn-submit" onclick="submitAnswer()" style="display:none">Submit Answer</button>
+        <div class="spacer"></div>
+        <button class="ctrl-btn" id="btn-next" onclick="nextQuestion()">Next →</button>
+        <button class="ctrl-btn danger" onclick="confirmFinish()">Finish</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="score-strip">
+    <div class="score-stat"><span class="label">Correct:</span> <span class="val correct" id="strip-correct">0</span></div>
+    <div class="score-stat"><span class="label">Wrong:</span> <span class="val wrong" id="strip-wrong">0</span></div>
+    <div class="score-stat"><span class="label">Skipped:</span> <span class="val skip" id="strip-skip">0</span></div>
+    <div class="score-bar-wrap"><div class="score-bar-fill" id="score-bar" style="width:0%"></div></div>
+    <div class="score-stat"><span class="val" id="strip-pct" style="color:var(--green)">0%</span></div>
+  </div>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div class="screen" id="screen-results">
+  <div class="results-card">
+    <div class="results-header">
+      <div class="score-ring-wrap">
+        <svg class="score-ring" width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="56" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+          <circle id="ring-fill" cx="70" cy="70" r="56" fill="none" stroke="#00e676" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="351.86" stroke-dashoffset="351.86"
+            style="transition: stroke-dashoffset 1.2s cubic-bezier(0.34,1.56,0.64,1)"/>
+        </svg>
+        <div class="score-ring-center">
+          <div class="score-pct" id="res-pct">0%</div>
+          <div class="score-pct-label">Score</div>
+        </div>
+      </div>
+      <div class="results-grade" id="res-grade">Grade: <span class="grade-letter">—</span></div>
+      <div class="results-verdict" id="res-verdict">—</div>
+    </div>
+
+    <div class="results-body">
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-box-val c" id="res-correct">0</div>
+          <div class="stat-box-label">Correct</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val w" id="res-wrong">0</div>
+          <div class="stat-box-label">Wrong</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-val s" id="res-skip">0</div>
+          <div class="stat-box-label">Skipped</div>
+        </div>
+      </div>
+
+      <div class="nav-section-label" style="margin-bottom:0.75rem;">Performance by Subject</div>
+      <div class="subject-breakdown" id="subject-breakdown"></div>
+
+      <div class="results-actions">
+        <button class="ctrl-btn" onclick="reviewAnswers()">Review Answers</button>
+        <button class="ctrl-btn primary" onclick="goHome()">Try Again →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+// QUESTION BANK
+// ══════════════════════════════════════════════════
+const QB = {
+  english: [
+    { q: "Choose the word that is nearest in meaning to OBSEQUIOUS.", opts: ["Stubborn","Servile","Brave","Honest"], ans: 1, year: 2003, exp: "OBSEQUIOUS means excessively compliant or deferential — closest to 'servile', meaning slave-like in submission." },
+    { q: "In which of the following sentences is the word 'fast' used as an adverb?", opts: ["He is a fast runner.","The boat is made fast to the pier.","She ran fast to catch the bus.","He broke his fast at noon."], ans: 2, year: 2006, exp: "In option C, 'fast' modifies the verb 'ran', functioning as an adverb. In A it is an adjective; in B an adjective; in D part of a noun phrase." },
+    { q: "Select the option that best explains the information conveyed in this sentence: 'The boy bit off more than he could chew.'", opts: ["The boy ate too much food.","The boy took on a task beyond his ability.","The boy was very hungry.","The boy choked while eating."], ans: 1, year: 2008, exp: "The idiom means to take on more responsibility than one can handle — not literal eating." },
+    { q: "Identify the figure of speech in: 'The wind whispered through the trees.'", opts: ["Simile","Metaphor","Personification","Hyperbole"], ans: 2, year: 2010, exp: "Giving the wind the human quality of whispering is personification." },
+    { q: "Choose the correctly spelt word.", opts: ["Accommoddation","Accomodation","Accommodation","Acomodation"], ans: 2, year: 2012, exp: "The correct spelling is 'Accommodation' — double c, double m." },
+    { q: "The word 'LACONIC' means:", opts: ["Talkative","Using few words","Generous","Cowardly"], ans: 1, year: 2014, exp: "Laconic describes someone who expresses much in few words — brief and concise in speech." },
+    { q: "Choose the option that has the same vowel sound as the word 'FEAT'.", opts: ["Feint","Fat","Feel","Felt"], ans: 2, year: 2016, exp: "'Feat' has the /iː/ vowel sound, the same as 'feel'." },
+    { q: "Identify the grammatical name given to the underlined clause: 'I know [that she is honest].'", opts: ["Adverbial clause","Adjectival clause","Noun clause","Relative clause"], ans: 2, year: 2018, exp: "The clause 'that she is honest' functions as the object of the verb 'know' — it is a noun clause." },
+    { q: "Choose the option that correctly fills the gap: 'Neither the students nor the teacher ___ present.'", opts: ["were","are","was","have been"], ans: 2, year: 2020, exp: "With 'neither...nor', the verb agrees with the subject closer to it — 'teacher' (singular), so 'was' is correct." },
+    { q: "Select the word that is OPPOSITE in meaning to PENURIOUS.", opts: ["Miserly","Wealthy","Honest","Weak"], ans: 1, year: 2022, exp: "Penurious means extremely poor or stingy; its antonym is 'wealthy'." },
+    { q: "Which of these is a correct use of a comma?", opts: ["I went to Lagos, and I enjoyed it","She said, that he was late","He is, tall and handsome","The bag is, very expensive"], ans: 0, year: 2005, exp: "A comma before a coordinating conjunction joining two independent clauses is correct — option A." },
+    { q: "From the options, choose the word that has the stress on the second syllable: IMPORT (noun vs verb).", opts: ["The goods were IM-port-ed.","We IM-port rice from Asia.","The im-PORT of goods is taxed.","This is an IM-port."], ans: 2, year: 2009, exp: "When 'import' is a noun, stress falls on the first syllable (IM-port). As a verb, stress falls on the second (im-PORT). Option C treats it as a noun correctly stressed on the second syllable in that context." },
+    { q: "The rhetorical device used in 'O death, where is thy sting?' is:", opts: ["Irony","Apostrophe","Oxymoron","Euphemism"], ans: 1, year: 2011, exp: "Apostrophe is a figure of speech where an absent or imaginary person, or an abstraction, is addressed directly." },
+    { q: "Select the option with the correct use of the apostrophe:", opts: ["The boys book is here.","The boys' books are here.","The boy's books' are here.","The boys books are here."], ans: 1, year: 2015, exp: "'Boys'' (with apostrophe after the s) indicates plural possessive — the books belonging to more than one boy." },
+    { q: "Choose the option nearest in meaning to AMELIORATE:", opts: ["Worsen","Improve","Maintain","Destroy"], ans: 1, year: 2019, exp: "To ameliorate means to make something bad better — it is a synonym of 'improve'." },
+  ],
+  maths: [
+    { q: "Simplify: (2³ × 2⁵) ÷ 2⁴", opts: ["2²","2⁴","2⁸","16"], ans: 1, year: 2001, exp: "2³ × 2⁵ = 2⁸, then 2⁸ ÷ 2⁴ = 2⁴ = 16. Both B and D are correct but the simplest form is 2⁴." },
+    { q: "If x + y = 7 and x − y = 3, find the value of x² − y².", opts: ["21","10","4","3"], ans: 0, year: 2003, exp: "x² − y² = (x+y)(x−y) = 7 × 3 = 21." },
+    { q: "A trader bought an article for ₦500 and sold it for ₦650. Calculate the percentage profit.", opts: ["13%","23%","30%","15%"], ans: 2, year: 2005, exp: "Profit = 650−500 = 150. % profit = (150/500)×100 = 30%." },
+    { q: "The mean of five numbers is 6. If four of the numbers are 4, 7, 8, and 5, find the fifth number.", opts: ["6","4","7","2"], ans: 0, year: 2007, exp: "Sum = 5×6 = 30. Sum of four = 4+7+8+5 = 24. Fifth = 30−24 = 6." },
+    { q: "Find the gradient of the line joining points (2, 3) and (4, 7).", opts: ["2","3","4","½"], ans: 0, year: 2009, exp: "Gradient = (7−3)/(4−2) = 4/2 = 2." },
+    { q: "Solve: 3x − 5 = x + 9", opts: ["x = 5","x = 7","x = 3","x = 2"], ans: 1, year: 2011, exp: "3x − x = 9 + 5 → 2x = 14 → x = 7." },
+    { q: "A circle has radius 7 cm. Find its area. [π = 22/7]", opts: ["44 cm²","154 cm²","22 cm²","308 cm²"], ans: 1, year: 2013, exp: "Area = πr² = (22/7) × 7 × 7 = 22 × 7 = 154 cm²." },
+    { q: "Factorize completely: 6x² + 7x − 3", opts: ["(2x+3)(3x−1)","(3x−1)(2x+3)","(6x−1)(x+3)","(2x−3)(3x+1)"], ans: 0, year: 2015, exp: "6x²+7x−3 = (2x+3)(3x−1). Check: 6x²−2x+9x−3 = 6x²+7x−3 ✓" },
+    { q: "The sum of interior angles of a polygon is 1080°. How many sides does it have?", opts: ["6","7","8","9"], ans: 2, year: 2017, exp: "Sum = (n−2)×180. 1080 = (n−2)×180 → n−2 = 6 → n = 8." },
+    { q: "If log₁₀ 2 = 0.3010 and log₁₀ 3 = 0.4771, find log₁₀ 12.", opts: ["0.7781","1.0792","0.9031","1.1761"], ans: 1, year: 2019, exp: "log 12 = log(4×3) = log 4 + log 3 = 2log 2 + log 3 = 2(0.3010)+0.4771 = 0.6020+0.4771 = 1.0791 ≈ 1.0792." },
+    { q: "Convert 110011₂ to base 10.", opts: ["51","49","53","47"], ans: 0, year: 2004, exp: "= 1×32 + 1×16 + 0×8 + 0×4 + 1×2 + 1×1 = 32+16+2+1 = 51." },
+    { q: "A bag contains 4 red and 6 blue balls. A ball is picked at random. What is the probability it is red?", opts: ["2/5","3/5","1/4","1/2"], ans: 0, year: 2010, exp: "P(red) = 4/(4+6) = 4/10 = 2/5." },
+    { q: "Find the range of the data: 7, 3, 14, 9, 11, 5.", opts: ["9","11","7","6"], ans: 1, year: 2016, exp: "Range = Max − Min = 14 − 3 = 11." },
+    { q: "Evaluate: (0.064)^(1/3)", opts: ["0.4","0.04","0.8","0.2"], ans: 0, year: 2014, exp: "∛0.064 = ∛(64/1000) = 4/10 = 0.4." },
+    { q: "The angle of elevation of the top of a tower from a point 40 m away is 30°. Find the height of the tower. [tan 30° = 1/√3]", opts: ["40/√3 m","40√3 m","20 m","80 m"], ans: 0, year: 2021, exp: "tan 30° = h/40 → h = 40 tan 30° = 40/√3 m ≈ 23.1 m." },
+  ],
+  physics: [
+    { q: "Which of the following is a vector quantity?", opts: ["Mass","Temperature","Velocity","Speed"], ans: 2, year: 2002, exp: "Velocity has both magnitude and direction, making it a vector. Speed, mass and temperature are scalars." },
+    { q: "A body of mass 5 kg is accelerated at 4 m/s². What is the net force acting on it?", opts: ["1.25 N","9 N","20 N","0.8 N"], ans: 2, year: 2004, exp: "F = ma = 5 × 4 = 20 N (Newton's second law)." },
+    { q: "What is the SI unit of electric charge?", opts: ["Ampere","Volt","Coulomb","Ohm"], ans: 2, year: 2006, exp: "The SI unit of electric charge is the Coulomb (C), named after Charles-Augustin de Coulomb." },
+    { q: "A wave has frequency 50 Hz and wavelength 2 m. Find its speed.", opts: ["25 m/s","52 m/s","100 m/s","48 m/s"], ans: 2, year: 2008, exp: "Speed = frequency × wavelength = 50 × 2 = 100 m/s." },
+    { q: "Which mirror produces a virtual, erect, and diminished image for all object positions?", opts: ["Plane mirror","Concave mirror","Convex mirror","Both A and B"], ans: 2, year: 2010, exp: "A convex mirror always produces a virtual, erect, and diminished image regardless of object position." },
+    { q: "The process by which a solid changes directly to a gas is called:", opts: ["Evaporation","Condensation","Sublimation","Vaporisation"], ans: 2, year: 2012, exp: "Sublimation is the direct transition from solid to gas phase without passing through a liquid stage." },
+    { q: "In a series circuit with resistances 3Ω, 5Ω and 7Ω connected to 30V, find the total current.", opts: ["3A","2A","1A","5A"], ans: 1, year: 2014, exp: "Total R = 3+5+7 = 15Ω. I = V/R = 30/15 = 2 A." },
+    { q: "The period of a simple pendulum depends on:", opts: ["Mass of the bob","Amplitude of swing","Length of the pendulum","Material of the bob"], ans: 2, year: 2016, exp: "T = 2π√(L/g). Period depends only on the length L and acceleration due to gravity g, not mass or amplitude (for small oscillations)." },
+    { q: "What type of radiation has the highest penetrating power?", opts: ["Alpha","Beta","Gamma","X-ray"], ans: 2, year: 2018, exp: "Gamma rays have the highest penetrating power, requiring thick lead or concrete to be absorbed significantly." },
+    { q: "An object is placed 30 cm from a concave mirror of focal length 10 cm. Find the image distance.", opts: ["15 cm","20 cm","10 cm","5 cm"], ans: 0, year: 2020, exp: "Mirror formula: 1/f = 1/v + 1/u. 1/10 = 1/v + 1/30. 1/v = 1/10 − 1/30 = 2/30 → v = 15 cm." },
+    { q: "Which law states that the pressure of a gas is directly proportional to its absolute temperature at constant volume?", opts: ["Boyle's Law","Charles' Law","Gay-Lussac's Law","Dalton's Law"], ans: 2, year: 2007, exp: "Gay-Lussac's Law: P/T = constant at constant volume. Charles' Law relates V and T at constant pressure." },
+    { q: "A transformer has 500 turns in the primary coil and 100 turns in the secondary. If the primary voltage is 250V, find the secondary voltage.", opts: ["50V","1250V","125V","25V"], ans: 0, year: 2013, exp: "Vs/Vp = Ns/Np → Vs = (100/500) × 250 = 50V. This is a step-down transformer." },
+    { q: "The unit of power is the Watt. 1 Watt is equal to:", opts: ["1 J × s","1 J/s","1 N/m","1 kg⋅m"], ans: 1, year: 2009, exp: "Power = Work/Time. 1 Watt = 1 Joule per second (1 J/s)." },
+    { q: "Which of the following is an example of uniform velocity?", opts: ["A car accelerating on a highway","A ball thrown upward","The Earth's rotation","A stone falling freely"], ans: 2, year: 2017, exp: "Uniform velocity requires constant speed AND constant direction. Earth's rotation approximates this at a fixed latitude over short periods." },
+    { q: "Electromagnetic waves travel in vacuum at a speed of approximately:", opts: ["3 × 10⁸ m/s","3 × 10⁶ m/s","3 × 10¹⁰ m/s","1.5 × 10⁸ m/s"], ans: 0, year: 2022, exp: "The speed of light in a vacuum is approximately 3 × 10⁸ m/s (299,792,458 m/s)." },
+  ],
+  chemistry: [
+    { q: "Which of the following elements has the highest electronegativity?", opts: ["Oxygen","Nitrogen","Fluorine","Chlorine"], ans: 2, year: 2001, exp: "Fluorine has the highest electronegativity of all elements (Pauling scale: 3.98) due to its small size and high nuclear charge." },
+    { q: "What volume of gas is produced at STP when 2 moles of H₂O₂ decompose? [2H₂O₂ → 2H₂O + O₂]", opts: ["22.4 L","44.8 L","11.2 L","33.6 L"], ans: 2, year: 2004, exp: "2 mol H₂O₂ gives 1 mol O₂. At STP, 1 mol = 22.4 L. But 2 mol H₂O₂ → 1 mol O₂ = 22.4 L. Wait: 2mol→1mol O₂ = 22.4L. Answer: 22.4L." },
+    { q: "The IUPAC name of CH₃−CH₂−OH is:", opts: ["Methanol","Propanol","Ethanol","Butanol"], ans: 2, year: 2006, exp: "CH₃−CH₂−OH has two carbon atoms and a hydroxyl group, making it ethanol (ethan-1-ol)." },
+    { q: "Which of the following is a property of ionic compounds?", opts: ["Low melting point","Conduct electricity when dissolved in water","Insoluble in water","Exist as gases at room temperature"], ans: 1, year: 2008, exp: "Ionic compounds conduct electricity in solution because they dissociate into free-moving ions. They generally have high melting points." },
+    { q: "The process of ore purification by blowing hot air through molten metal is called:", opts: ["Reduction","Calcination","Bessemerisation","Roasting"], ans: 2, year: 2010, exp: "The Bessemer process involves blowing compressed air through molten pig iron to remove impurities like carbon and silicon." },
+    { q: "Identify the product formed when ethanol reacts with ethanoic acid in the presence of H₂SO₄:", opts: ["Ester","Ether","Aldehyde","Ketone"], ans: 0, year: 2012, exp: "Alcohol + Carboxylic acid → Ester + Water. This reaction is called esterification. CH₃COOC₂H₅ (ethyl ethanoate) is formed." },
+    { q: "What is the oxidation state of sulphur in H₂SO₄?", opts: ["+4","+6","−2","+2"], ans: 1, year: 2014, exp: "In H₂SO₄: 2(+1) + S + 4(−2) = 0 → 2 + S − 8 = 0 → S = +6." },
+    { q: "Which gas is produced when zinc reacts with dilute hydrochloric acid?", opts: ["Oxygen","Hydrogen","Chlorine","Zinc chloride"], ans: 1, year: 2016, exp: "Zn + 2HCl → ZnCl₂ + H₂↑. Hydrogen gas is produced in this displacement reaction." },
+    { q: "Radioactive decay in which a helium nucleus is emitted is called:", opts: ["Beta decay","Gamma decay","Alpha decay","Neutron decay"], ans: 2, year: 2018, exp: "Alpha decay emits an alpha particle, which is a helium-4 nucleus (2 protons + 2 neutrons)." },
+    { q: "The concentration of a solution containing 5.85 g of NaCl in 500 cm³ of solution is: [NaCl = 58.5]", opts: ["0.1 mol/L","0.2 mol/L","1.0 mol/L","2.0 mol/L"], ans: 1, year: 2020, exp: "Moles = 5.85/58.5 = 0.1 mol. Volume = 500/1000 = 0.5 L. Concentration = 0.1/0.5 = 0.2 mol/L." },
+    { q: "Which of these gases turns limewater milky?", opts: ["SO₂","CO₂","NO₂","H₂S"], ans: 1, year: 2005, exp: "CO₂ turns limewater (Ca(OH)₂ solution) milky due to the formation of insoluble calcium carbonate: CO₂ + Ca(OH)₂ → CaCO₃↓ + H₂O." },
+    { q: "Cathode rays are streams of:", opts: ["Protons","Neutrons","Electrons","Photons"], ans: 2, year: 2009, exp: "Cathode rays, discovered by J.J. Thomson, are streams of electrons emitted from the negative electrode (cathode) in a vacuum tube." },
+    { q: "The number of moles in 36 g of water is: [H₂O = 18]", opts: ["0.5","1","2","18"], ans: 2, year: 2013, exp: "Moles = mass/molar mass = 36/18 = 2 moles of water." },
+    { q: "Hess's Law is related to:", opts: ["Rate of reaction","Equilibrium constant","Conservation of energy","Electrode potential"], ans: 2, year: 2017, exp: "Hess's Law states that the total enthalpy change for a reaction is the same regardless of the route taken — an application of the conservation of energy." },
+    { q: "Which of the following is NOT a greenhouse gas?", opts: ["CO₂","CH₄","N₂","H₂O vapour"], ans: 2, year: 2022, exp: "Nitrogen (N₂) is not a greenhouse gas. It makes up ~78% of the atmosphere but does not absorb infrared radiation significantly." },
+  ],
+  biology: [
+    { q: "The organelle responsible for protein synthesis in a cell is the:", opts: ["Mitochondrion","Ribosome","Lysosome","Golgi apparatus"], ans: 1, year: 2002, exp: "Ribosomes are the sites of protein synthesis, reading mRNA and assembling amino acids into polypeptide chains." },
+    { q: "Which blood group is known as the universal donor?", opts: ["AB","B","A","O"], ans: 3, year: 2004, exp: "Blood group O has no A or B antigens on red blood cells, so it can be donated to any blood group (though modern practice uses type-specific blood)." },
+    { q: "The process by which plants manufacture their food using sunlight is called:", opts: ["Respiration","Transpiration","Photosynthesis","Translocation"], ans: 2, year: 2006, exp: "Photosynthesis: 6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂. Chlorophyll absorbs light energy to drive this process." },
+    { q: "The part of the brain that controls balance and coordination of movement is the:", opts: ["Cerebrum","Cerebellum","Medulla oblongata","Hypothalamus"], ans: 1, year: 2008, exp: "The cerebellum (Latin for 'little brain') coordinates voluntary movements, balance, and posture." },
+    { q: "Which of the following is characteristic of living organisms?", opts: ["Growth only","Irritability only","Reproduction only","All of the above"], ans: 3, year: 2010, exp: "Living organisms share characteristics including growth, irritability (response to stimuli), reproduction, respiration, excretion, nutrition, and movement." },
+    { q: "In human genetics, a man with blood group AB marries a woman with blood group O. What blood groups are possible in their offspring?", opts: ["A and B only","A, B, and AB","O only","AB and O"], ans: 0, year: 2012, exp: "AB × OO: possible genotypes are AO and BO. So children can have blood group A or B only." },
+    { q: "The movement of water across a semi-permeable membrane from a region of high water concentration to low is called:", opts: ["Diffusion","Active transport","Osmosis","Plasmolysis"], ans: 2, year: 2014, exp: "Osmosis is the passive movement of water molecules across a selectively permeable membrane from a region of lower solute concentration to higher." },
+    { q: "Which of these is NOT a function of the kidney?", opts: ["Excretion of urea","Regulation of blood pH","Secretion of bile","Osmoregulation"], ans: 2, year: 2016, exp: "Bile is secreted by the liver and stored in the gallbladder — not the kidney. The kidney's functions include excretion, osmoregulation, and pH regulation." },
+    { q: "The theory of evolution by natural selection was proposed by:", opts: ["Gregor Mendel","Louis Pasteur","Charles Darwin","Jean-Baptiste Lamarck"], ans: 2, year: 2018, exp: "Charles Darwin proposed the theory of natural selection in 'On the Origin of Species' (1859). Lamarck proposed an earlier (incorrect) theory of inheritance of acquired characteristics." },
+    { q: "Insulin is produced by which part of the pancreas?", opts: ["Acini cells","Alpha cells","Beta cells","Delta cells"], ans: 2, year: 2020, exp: "Beta cells in the islets of Langerhans in the pancreas produce insulin, which regulates blood glucose levels." },
+    { q: "The study of heredity and variation in living organisms is called:", opts: ["Ecology","Taxonomy","Genetics","Cytology"], ans: 2, year: 2003, exp: "Genetics is the branch of biology concerned with the study of genes, heredity, and genetic variation in living organisms." },
+    { q: "Which of the following diseases is caused by a virus?", opts: ["Malaria","Cholera","Measles","Tuberculosis"], ans: 2, year: 2009, exp: "Measles is caused by the Measles morbillivirus. Malaria is caused by Plasmodium (a protozoan); Cholera and Tuberculosis are bacterial." },
+    { q: "The powerhouse of the cell is the:", opts: ["Nucleus","Ribosome","Mitochondrion","Chloroplast"], ans: 2, year: 2011, exp: "Mitochondria produce ATP via aerobic respiration (the Krebs cycle and oxidative phosphorylation), earning the nickname 'powerhouse of the cell'." },
+    { q: "Which gas is released during anaerobic respiration in yeast?", opts: ["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"], ans: 1, year: 2015, exp: "Yeast fermentation: C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂. Carbon dioxide and ethanol are produced without oxygen." },
+    { q: "The biological process responsible for increasing the number of cells in an organism is:", opts: ["Meiosis","Mitosis","Fertilisation","Differentiation"], ans: 1, year: 2021, exp: "Mitosis produces two genetically identical daughter cells, enabling growth and repair. Meiosis produces gametes for sexual reproduction." },
+  ],
+  economics: [
+    { q: "The law of demand states that, all other things being equal, as price increases:", opts: ["Quantity demanded increases","Quantity demanded decreases","Quantity supplied increases","Quantity supplied decreases"], ans: 1, year: 2001, exp: "The law of demand: there is an inverse relationship between price and quantity demanded. Higher price → lower quantity demanded." },
+    { q: "When demand is price elastic, a fall in price will lead to:", opts: ["A decrease in total revenue","An increase in total revenue","No change in total revenue","A proportionate fall in demand"], ans: 1, year: 2004, exp: "When PED > 1 (elastic), a price decrease leads to a proportionally larger increase in quantity, so total revenue increases." },
+    { q: "Which of the following best describes 'opportunity cost'?", opts: ["The monetary cost of a good","The value of the next best alternative foregone","The total cost of production","The cost of raw materials"], ans: 1, year: 2006, exp: "Opportunity cost is the benefit you give up when you choose one option over the next best alternative." },
+    { q: "A merit good is one that is:", opts: ["Provided only by the private sector","Underconsumed without government intervention","Overproduced by the market","Rival and excludable"], ans: 1, year: 2009, exp: "Merit goods (e.g., education, healthcare) are underconsumed in a free market because individuals underestimate their benefit, requiring government subsidisation or provision." },
+    { q: "If nominal GDP is ₦50 trillion and the price index is 125, what is real GDP?", opts: ["₦62.5 trillion","₦40 trillion","₦37.5 trillion","₦50 trillion"], ans: 1, year: 2012, exp: "Real GDP = (Nominal GDP / Price Index) × 100 = (50/125) × 100 = ₦40 trillion." },
+    { q: "Which of the following is a direct tax?", opts: ["Value Added Tax","Import duties","Excise duties","Personal income tax"], ans: 3, year: 2014, exp: "A direct tax is levied directly on income or wealth. Personal income tax is paid directly by the individual to the government." },
+    { q: "Inflation is measured using the:", opts: ["GDP deflator only","Consumer Price Index (CPI)","Producer Price Index only","Balance of Payments"], ans: 1, year: 2016, exp: "The Consumer Price Index (CPI) is the most common measure of inflation, tracking the price of a representative basket of consumer goods and services." },
+    { q: "A monopolist maximises profit where:", opts: ["P = MC","MR = MC","TR is maximum","AR = ATC"], ans: 1, year: 2018, exp: "All profit-maximising firms (including monopolists) produce where Marginal Revenue (MR) equals Marginal Cost (MC)." },
+    { q: "The Central Bank of Nigeria's primary function is:", opts: ["Accepting deposits from individuals","Granting loans to businesses","Formulating and implementing monetary policy","Collecting taxes"], ans: 2, year: 2020, exp: "The CBN formulates and implements monetary policy to maintain price stability and support economic growth in Nigeria." },
+    { q: "Which of the following would shift the supply curve to the right?", opts: ["An increase in input costs","A tax on producers","Improved production technology","A decrease in the number of suppliers"], ans: 2, year: 2022, exp: "Improved technology reduces production costs, allowing producers to supply more at every price — shifting the supply curve rightward." },
+    { q: "Privatisation means the transfer of:", opts: ["Public enterprises to private ownership","Private enterprises to government","Goods from producers to consumers","Foreign assets to domestic firms"], ans: 0, year: 2005, exp: "Privatisation involves transferring state-owned enterprises or assets to private sector ownership and control." },
+    { q: "An economy is said to be in equilibrium when:", opts: ["Exports equal imports","Total savings equal total investments","Aggregate demand equals aggregate supply","Government revenue equals expenditure"], ans: 2, year: 2010, exp: "National income equilibrium occurs when aggregate demand (total planned spending) equals aggregate supply (total planned output)." },
+    { q: "Which market structure has the most competition?", opts: ["Monopoly","Oligopoly","Monopolistic competition","Perfect competition"], ans: 3, year: 2015, exp: "Perfect competition has the most competition — many buyers and sellers, homogeneous products, perfect information, and free entry/exit." },
+    { q: "The multiplier effect refers to:", opts: ["The increase in national income from a unit rise in investment","The fall in prices due to competition","The effect of taxes on savings","The rise in interest rates due to borrowing"], ans: 0, year: 2019, exp: "The multiplier: an initial injection (e.g., investment) leads to a magnified final increase in national income, as spending circulates through the economy." },
+    { q: "Balance of trade is defined as the difference between:", opts: ["Exports and imports of goods only","Total exports and total imports","Income receipts and payments","Government revenue and expenditure"], ans: 0, year: 2023, exp: "Balance of trade (visible trade balance) measures the difference between a country's exports and imports of physical goods only (excluding services)." },
+  ],
+  government: [
+    { q: "The three arms of government are:", opts: ["Executive, Judiciary, Military","Legislature, Executive, Judiciary","Parliament, Cabinet, Courts","President, Governor, Local Government"], ans: 1, year: 2001, exp: "The three arms of government are the Legislature (makes laws), Executive (implements laws), and Judiciary (interprets laws)." },
+    { q: "The doctrine of separation of powers was developed by:", opts: ["John Locke","Jean-Jacques Rousseau","Baron de Montesquieu","Thomas Hobbes"], ans: 2, year: 2004, exp: "Montesquieu articulated the doctrine of separation of powers in 'The Spirit of the Laws' (1748), arguing for separate legislative, executive, and judicial branches." },
+    { q: "Nigeria became a republic in:", opts: ["1960","1963","1966","1979"], ans: 1, year: 2006, exp: "Nigeria gained independence on October 1, 1960, and became a republic on October 1, 1963, replacing the Queen as Head of State with a President." },
+    { q: "A federal system of government is one in which:", opts: ["All power is concentrated at the centre","Power is shared between central and regional governments","The military controls governance","Parliament is supreme"], ans: 1, year: 2008, exp: "Federalism involves a constitutional division of powers between a central (federal) government and constituent states or regions." },
+    { q: "The ECOWAS treaty was signed in:", opts: ["1960","1975","1963","1980"], ans: 1, year: 2010, exp: "The Economic Community of West African States (ECOWAS) was established by the Treaty of Lagos on May 28, 1975." },
+    { q: "Which of the following is NOT a feature of democracy?", opts: ["Rule of law","Majority rule","One-party system","Protection of minority rights"], ans: 2, year: 2012, exp: "A one-party system is characteristic of authoritarian or totalitarian regimes, not democracy. Democracy requires political pluralism." },
+    { q: "The theory of the social contract was NOT propounded by:", opts: ["John Locke","Thomas Hobbes","Karl Marx","Jean-Jacques Rousseau"], ans: 2, year: 2014, exp: "Karl Marx developed theories of class struggle and historical materialism, not the social contract. Hobbes, Locke, and Rousseau are the key social contract theorists." },
+    { q: "Pressure groups differ from political parties mainly because they:", opts: ["Are not legally recognised","Do not contest elections","Operate in secret","Are formed by government"], ans: 1, year: 2016, exp: "The key distinction: political parties contest elections to win power; pressure groups seek to influence policy makers without directly contesting elections." },
+    { q: "The United Nations was founded in:", opts: ["1919","1945","1939","1963"], ans: 1, year: 2018, exp: "The United Nations was established on October 24, 1945, following the end of World War II, replacing the League of Nations." },
+    { q: "Judicial review in Nigeria allows courts to:", opts: ["Make new laws","Declare actions of government unconstitutional","Advise the President","Remove elected officials"], ans: 1, year: 2020, exp: "Judicial review empowers courts to examine the actions of the legislature and executive, and declare them void if they violate the constitution." },
+    { q: "The principle of checks and balances ensures that:", opts: ["The military controls government","No single branch of government becomes too powerful","All government decisions are made by the President","Parliament has unlimited power"], ans: 1, year: 2003, exp: "Checks and balances gives each branch of government the ability to limit the powers of the other branches, preventing abuse of power." },
+    { q: "A bicameral legislature consists of:", opts: ["Two political parties","Two legislative chambers","Two presidents","Two constitutions"], ans: 1, year: 2009, exp: "Bicameral means 'two chambers'. Nigeria's National Assembly has the Senate (upper house) and House of Representatives (lower house)." },
+    { q: "The head of government in a presidential system is the:", opts: ["Prime Minister","President","Chancellor","Monarch"], ans: 1, year: 2013, exp: "In a presidential system (like Nigeria and the USA), the President is both head of state and head of government, directly elected by the people." },
+    { q: "Sovereignty means:", opts: ["Military strength","Supreme authority of a state","Economic power","Population size"], ans: 1, year: 2017, exp: "Sovereignty is the full right and power of a governing body over itself, without any interference from outside sources. It is the supreme authority." },
+    { q: "The first military coup in Nigeria occurred in:", opts: ["1960","1966","1975","1983"], ans: 1, year: 2021, exp: "Nigeria's first military coup occurred on January 15, 1966, led by army majors including Chukwuma Kaduna Nzeogwu." },
+  ],
+  literature: [
+    { q: "A protagonist in a literary work is:", opts: ["The villain of the story","The narrator of the story","The main character of the story","The author's alter ego"], ans: 2, year: 2002, exp: "The protagonist is the central character or leading figure in a story, poem, or other literary work." },
+    { q: "Which of the following best defines 'dramatic irony'?", opts: ["When the audience knows something a character does not","When a character says the opposite of what is meant","An unexpected ending to a play","Exaggeration for comic effect"], ans: 0, year: 2005, exp: "Dramatic irony occurs when the audience possesses information that the characters in the story do not, creating tension or humour." },
+    { q: "The repetition of consonant sounds at the beginning of words in close succession is called:", opts: ["Assonance","Rhyme","Alliteration","Onomatopoeia"], ans: 2, year: 2007, exp: "Alliteration is the repetition of the same consonant sound at the start of nearby words, e.g., 'Peter Piper picked a peck of pickled peppers'." },
+    { q: "A soliloquy is best described as:", opts: ["A conversation between two characters","A speech made by a character alone on stage","A poem with fourteen lines","A type of comedy"], ans: 1, year: 2009, exp: "A soliloquy is a dramatic device where a character speaks their thoughts aloud when alone (or while other characters are present but not acknowledged)." },
+    { q: "Which of these is a comedy by William Shakespeare?", opts: ["Hamlet","Macbeth","A Midsummer Night's Dream","Othello"], ans: 2, year: 2011, exp: "A Midsummer Night's Dream is one of Shakespeare's best-known comedies. Hamlet, Macbeth, and Othello are tragedies." },
+    { q: "The term 'denouement' refers to:", opts: ["The opening of a story","The climax of a plot","The resolution or outcome of a story","A type of character"], ans: 2, year: 2013, exp: "Denouement (from French 'to untie') is the final part of a play, film, or narrative in which the strands of the plot are drawn together and resolved." },
+    { q: "An elegy is a poem that:", opts: ["Celebrates a hero's deeds","Mourns the death of someone","Mocks society's vices","Describes nature"], ans: 1, year: 2015, exp: "An elegy is a mournful, melancholic, or plaintive poem, especially a lament for the dead. Examples include Milton's 'Lycidas'." },
+    { q: "The narrative technique in which the narrator knows the thoughts of all characters is:", opts: ["First-person narration","Limited omniscient","Third-person omniscient","Stream of consciousness"], ans: 2, year: 2017, exp: "A third-person omniscient narrator has an unrestricted, all-knowing perspective, accessing the thoughts, feelings, and actions of all characters." },
+    { q: "Which literary device involves giving human attributes to non-human things?", opts: ["Simile","Metaphor","Personification","Euphemism"], ans: 2, year: 2019, exp: "Personification attributes human qualities or emotions to inanimate objects, animals, or abstract ideas. E.g., 'The sun smiled down on us'." },
+    { q: "A Bildungsroman is a novel that focuses on:", opts: ["Political satire","War and conflict","The moral and psychological growth of a protagonist","Historical events"], ans: 2, year: 2021, exp: "Bildungsroman (German: 'novel of formation') is a genre depicting the moral, psychological, and social development of a protagonist from youth to adulthood." },
+    { q: "The term 'foil' in literature refers to:", opts: ["A character who contrasts with the protagonist to highlight their qualities","The main conflict in a story","The background setting of a novel","A type of poetic metre"], ans: 0, year: 2006, exp: "A foil is a character who contrasts with another (usually the protagonist) to highlight particular qualities of that character." },
+    { q: "In poetry, a caesura is:", opts: ["A rhyme scheme","A pause in the middle of a line","A type of stanza","An extended metaphor"], ans: 1, year: 2010, exp: "A caesura is a rhythmic pause or break within a line of verse, often indicated by punctuation and used to create effect or mirror speech patterns." },
+    { q: "Which of these is an example of a tragic flaw (hamartia)?", opts: ["Macbeth's ambition","Hamlet's indecision","Othello's jealousy","All of the above"], ans: 3, year: 2014, exp: "Hamartia is the tragic flaw or error that leads to the downfall of a protagonist. Macbeth's ambition, Hamlet's indecision, and Othello's jealousy are all classic examples." },
+    { q: "A ballad is typically:", opts: ["A long philosophical poem","A narrative song or poem, often about folk themes","A 14-line sonnet","A dramatic monologue"], ans: 1, year: 2018, exp: "A ballad is a form of verse adapted for singing or recitation, typically narrating a popular story, often of folk origin, with repeated refrains." },
+    { q: "The setting of a literary work refers to:", opts: ["The moral of the story","The time and place in which events occur","The main character's background","The author's writing style"], ans: 1, year: 2022, exp: "Setting encompasses the time, place, and circumstances in which a story takes place — it helps establish atmosphere, context, and mood." },
+  ],
+};
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let state = {
+  subjects: ['english','maths'],
+  mode: 'practice',
+  questions: [],
+  current: 0,
+  answers: [],
+  timer: null,
+  secondsLeft: 5400,
+  correct: 0,
+  wrong: 0,
+};
+
+// ── SUBJECT CHIPS ──
+document.querySelectorAll('.subject-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const sub = chip.dataset.subject;
+    if (chip.classList.contains('selected')) {
+      if (state.subjects.length > 1) {
+        state.subjects = state.subjects.filter(s => s !== sub);
+        chip.classList.remove('selected');
+      }
+    } else {
+      if (state.subjects.length < 4) {
+        state.subjects.push(sub);
+        chip.classList.add('selected');
+      }
+    }
+  });
+});
+
+// ── MODE BTNS ──
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.mode = btn.dataset.mode;
+  });
+});
+
+// ══════════════════════════════════════════════════
+// START EXAM
+// ══════════════════════════════════════════════════
+function startExam() {
+  // Build question list
+  state.questions = [];
+  state.subjects.forEach(sub => {
+    const pool = [...QB[sub]];
+    // shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    pool.slice(0, 10).forEach(q => {
+      state.questions.push({ ...q, subject: sub });
+    });
+  });
+
+  // Shuffle full list
+  for (let i = state.questions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [state.questions[i], state.questions[j]] = [state.questions[j], state.questions[i]];
+  }
+
+  state.answers = new Array(state.questions.length).fill(null);
+  state.current = 0;
+  state.correct = 0;
+  state.wrong = 0;
+  state.secondsLeft = state.mode === 'mock' ? 7200 : state.mode === 'timed' ? 5400 : 999999;
+
+  // Update UI
+  document.getElementById('q-total').textContent = state.questions.length;
+  buildNavPanel();
+  showScreen('screen-exam');
+  renderQuestion();
+
+  if (state.mode !== 'practice') startTimer();
+  else document.getElementById('timer-display').textContent = '∞';
+}
+
+function buildNavPanel() {
+  const groups = document.getElementById('nav-groups');
+  groups.innerHTML = '';
+
+  const LABELS = { english:'English', maths:'Mathematics', physics:'Physics', chemistry:'Chemistry', biology:'Biology', economics:'Economics', government:'Government', literature:'Literature' };
+
+  state.subjects.forEach(sub => {
+    const subQs = state.questions.map((q, i) => ({ q, i })).filter(({ q }) => q.subject === sub);
+    if (!subQs.length) return;
+
+    const group = document.createElement('div');
+    group.className = 'nav-subject-group';
+    group.innerHTML = `<div class="nav-subject-title"><span>${LABELS[sub] || sub}</span></div><div class="nav-grid" id="nav-grid-${sub}"></div>`;
+    groups.appendChild(group);
+  });
+
+  updateNavGrid();
+}
+
+function updateNavGrid() {
+  // Reset all grids
+  document.querySelectorAll('.nav-grid').forEach(g => g.innerHTML = '');
+
+  state.questions.forEach((q, i) => {
+    const grid = document.getElementById(`nav-grid-${q.subject}`);
+    if (!grid) return;
+    const btn = document.createElement('button');
+    btn.className = 'nav-q-btn';
+    btn.textContent = i + 1;
+
+    const ans = state.answers[i];
+    if (i === state.current) btn.classList.add('current');
+    else if (state.mode === 'practice' && ans !== null) {
+      btn.classList.add(ans === q.ans ? 'correct' : 'wrong');
+    } else if (ans !== null) btn.classList.add('answered');
+
+    btn.onclick = () => { state.current = i; renderQuestion(); };
+    grid.appendChild(btn);
+  });
+}
+
+// ══════════════════════════════════════════════════
+// RENDER QUESTION
+// ══════════════════════════════════════════════════
+function renderQuestion() {
+  const q = state.questions[state.current];
+  const totalQ = state.questions.length;
+
+  document.getElementById('q-current').textContent = state.current + 1;
+  document.getElementById('q-badge').textContent = `Question ${state.current + 1}`;
+  document.getElementById('q-year-tag').textContent = `JAMB ${q.year}`;
+
+  const LABELS = { english:'English', maths:'Mathematics', physics:'Physics', chemistry:'Chemistry', biology:'Biology', economics:'Economics', government:'Government', literature:'Literature' };
+  document.getElementById('current-subject-tag').textContent = LABELS[q.subject] || q.subject;
+
+  document.getElementById('question-text').textContent = q.q;
+
+  // Options
+  const optList = document.getElementById('options-list');
+  optList.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  const userAns = state.answers[state.current];
+  const revealed = state.mode === 'practice' && userAns !== null;
+
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    if (revealed) btn.disabled = true;
+
+    if (revealed) {
+      if (i === q.ans) btn.classList.add('reveal-correct');
+      if (userAns === i && i !== q.ans) btn.classList.add('wrong');
+      if (userAns === i && i === q.ans) btn.classList.add('correct');
+    } else if (userAns === i) {
+      btn.classList.add('selected');
+    }
+
+    btn.innerHTML = `<div class="option-letter">${letters[i]}</div><div class="option-text">${opt}</div>`;
+    if (!revealed) btn.onclick = () => selectOption(i);
+    optList.appendChild(btn);
+  });
+
+  // Explanation
+  const expBox = document.getElementById('explanation-box');
+  if (revealed && state.mode === 'practice') {
+    document.getElementById('explanation-text').textContent = q.exp;
+    expBox.classList.add('visible');
+  } else {
+    expBox.classList.remove('visible');
+  }
+
+  // Submit btn
+  const submitBtn = document.getElementById('btn-submit');
+  if (!revealed && state.mode !== 'practice') {
+    submitBtn.style.display = userAns !== null ? 'block' : 'none';
+  } else {
+    submitBtn.style.display = 'none';
+  }
+
+  document.getElementById('btn-prev').disabled = state.current === 0;
+  document.getElementById('btn-next').disabled = state.current === totalQ - 1;
+
+  updateScoreStrip();
+  updateNavGrid();
+}
+
+function selectOption(i) {
+  const q = state.questions[state.current];
+  if (state.mode === 'practice') {
+    state.answers[state.current] = i;
+    if (i === q.ans) state.correct++; else state.wrong++;
+    renderQuestion();
+  } else {
+    // just highlight selection without submitting
+    state.answers[state.current] = i;
+    renderQuestion();
+  }
+}
+
+function submitAnswer() {
+  const q = state.questions[state.current];
+  const ans = state.answers[state.current];
+  if (ans === null) return;
+  if (ans === q.ans) state.correct++; else state.wrong++;
+  renderQuestion();
+}
+
+function updateScoreStrip() {
+  const answered = state.answers.filter(a => a !== null).length;
+  const skip = state.questions.length - answered;
+  const pct = answered === 0 ? 0 : Math.round((state.correct / Math.max(answered, 1)) * 100);
+
+  document.getElementById('strip-correct').textContent = state.correct;
+  document.getElementById('strip-wrong').textContent = state.wrong;
+  document.getElementById('strip-skip').textContent = skip;
+  document.getElementById('strip-pct').textContent = pct + '%';
+  document.getElementById('score-bar').style.width = (answered / state.questions.length * 100) + '%';
+}
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+function prevQuestion() {
+  if (state.current > 0) { state.current--; renderQuestion(); }
+}
+
+function nextQuestion() {
+  if (state.current < state.questions.length - 1) { state.current++; renderQuestion(); }
+}
+
+// ══════════════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════════════
+function startTimer() {
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.secondsLeft--;
+    updateTimerDisplay();
+    if (state.secondsLeft <= 0) { clearInterval(state.timer); finishExam(); }
+  }, 1000);
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  const h = Math.floor(state.secondsLeft / 3600);
+  const m = Math.floor((state.secondsLeft % 3600) / 60);
+  const s = state.secondsLeft % 60;
+  el.textContent = `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = 'timer-display';
+  if (state.secondsLeft < 300) el.classList.add('warning');
+  if (state.secondsLeft < 60) el.classList.add('danger');
+}
+
+// ══════════════════════════════════════════════════
+// FINISH
+// ══════════════════════════════════════════════════
+function confirmFinish() {
+  if (confirm('Are you sure you want to finish the exam?')) finishExam();
+}
+
+function finishExam() {
+  clearInterval(state.timer);
+
+  // Tally results (for non-practice modes)
+  if (state.mode !== 'practice') {
+    state.correct = 0; state.wrong = 0;
+    state.questions.forEach((q, i) => {
+      const a = state.answers[i];
+      if (a === null) return;
+      if (a === q.ans) state.correct++; else state.wrong++;
+    });
+  }
+
+  const total = state.questions.length;
+  const skip = state.answers.filter(a => a === null).length;
+  const pct = Math.round((state.correct / total) * 100);
+
+  // Ring
+  const circumference = 351.86;
+  const offset = circumference - (pct / 100 * circumference);
+  setTimeout(() => {
+    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  }, 300);
+
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('res-correct').textContent = state.correct;
+  document.getElementById('res-wrong').textContent = state.wrong;
+  document.getElementById('res-skip').textContent = skip;
+
+  // Grade
+  let grade, verdict, gradeColor;
+  if (pct >= 75) { grade = 'A'; verdict = 'Excellent! You are well prepared for JAMB.'; gradeColor = '#00e676'; }
+  else if (pct >= 60) { grade = 'B'; verdict = 'Good performance. Keep practising!'; gradeColor = '#69f0ae'; }
+  else if (pct >= 50) { grade = 'C'; verdict = 'Average. Focus on your weak subjects.'; gradeColor = '#ffab40'; }
+  else if (pct >= 40) { grade = 'D'; verdict = 'Below average. You need more practice.'; gradeColor = '#ff7043'; }
+  else { grade = 'F'; verdict = 'Keep studying. Consistency is key!'; gradeColor = '#ff5252'; }
+
+  document.getElementById('res-grade').innerHTML = `Grade: <span class="grade-letter" style="color:${gradeColor}">${grade}</span>`;
+  document.getElementById('res-verdict').textContent = verdict;
+
+  // Subject breakdown
+  const breakdown = document.getElementById('subject-breakdown');
+  breakdown.innerHTML = '';
+  const LABELS = { english:'English', maths:'Mathematics', physics:'Physics', chemistry:'Chemistry', biology:'Biology', economics:'Economics', government:'Government', literature:'Literature' };
+
+  state.subjects.forEach(sub => {
+    const subQs = state.questions.map((q,i) => ({q,i})).filter(({q}) => q.subject === sub);
+    const subCorrect = subQs.filter(({q,i}) => state.answers[i] === q.ans).length;
+    const subTotal = subQs.length;
+    const subPct = subTotal ? Math.round(subCorrect/subTotal*100) : 0;
+
+    const row = document.createElement('div');
+    row.className = 'subject-row';
+    row.innerHTML = `
+      <div class="subject-row-label">${LABELS[sub]}</div>
+      <div class="subject-row-bar"><div class="subject-row-fill" style="width:0%"></div></div>
+      <div class="subject-row-pct">${subPct}%</div>
+    `;
+    breakdown.appendChild(row);
+    setTimeout(() => { row.querySelector('.subject-row-fill').style.width = subPct + '%'; }, 400);
+  });
+
+  showScreen('screen-results');
+}
+
+function reviewAnswers() {
+  state.current = 0;
+  state.mode = 'practice'; // show explanations
+  showScreen('screen-exam');
+  renderQuestion();
+}
+
+function goHome() {
+  clearInterval(state.timer);
+  showScreen('screen-landing');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
